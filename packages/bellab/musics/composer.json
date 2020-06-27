@@ -1,0 +1,23 @@
+{
+    "name": "bellab/musics",
+    "description": "Music manager for collections, grouping, upload, download and stream.",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "eribell",
+            "email": "efedua.bell@gmail.com"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "database"
+        ],
+        "psr-4": {
+            "App\\": "app/",
+            "BelLAB\\Musics\\": "packages/bellab/musics/src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {}
+}
