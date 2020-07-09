@@ -4,16 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Artists extends Model
+class Albums extends Model
 {
     protected $fillable = [
-        'name', 'sex', 'avatar_url', 'bio', 'social'
+        'name', 'genre', 'year'
     ];
-
-    public function users ()
-    {
-        return $this->belongsTo(User::class);
-    }
 
     public function tracks ()
     {

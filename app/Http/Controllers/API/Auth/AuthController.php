@@ -3,141 +3,90 @@
 namespace App\Http\Controllers\API\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\ProcessRoles;
+use App\Jobs\ProcessRegSignup;
+use App\Signup;
 use App\User;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use stdClass;
 
 class AuthController extends Controller
 {
-    public $user;
-    public $tokenResult;
-    
+    use AuthFacade;
+
+    protected $user;
+
     /**
-     * Create User
-     *
      * @param Request $request
-     * @return json $mixed
      */
+    public function regSignup (Request $request)
+    {
+        if (!$request->exists('email') && !$request->exists('name') && !$this->validator($request->email)) {
+            return response()->json([], 400);
+        }
+        if ($this->user($request->email)) {
+            return response()->json([], 409);
+        }
+        $this->user = new stdClass;
+        $this->user->name = $request->name;
+        $this->user->email = $request->email;
+        ProcessRegSignup::dispatch($this->user);
+        return response()->json([], 200);
+    }
+
+    public function verSignup (Request $request)
+    {
+        $signup = Signup::find($request->id);
+        if ($this->user($signup->email)) {
+            return response()->json([], 409);
+        }
+        return response()->json([
+            'name' => $signup->name
+        ], 200);
+    }
+
     public function signup (Request $request)
     {
-        $this->request = $request;
-        $this->store();
-        $this->auth();
-        return response()->json(
+        $signup = Signup::find($request->id);
+        if ($this->user($signup->email)) {
+            return response()->json([], 409);
+        }
+        if (!$request->exists('password')) {
+            return response()->json([], 400);
+        }
+        $user = new User([
+            'name' => $signup->name,
+            'email' => $signup->email,
+            'password' => bcrypt($request->password)
+        ]);
+        $user->save();
+        $user->roles()->sync(1);
+        $data = $this->lazyAuth($user);
+        return response()->json([
+                'user' => $data['user']
+            ], 200,
             [
-                'message' => 'Account created successfully',
-                'user' => $this->user,
-                // 'activate' => $activationKey
-            ],
-            200,
-            [
-                'Authorization' => 'Bearer '. $this->tokenResult->accessToken,
+                'Authorization' => 'Bearer ' . $data['token'],
                 'Content-Type' => 'application/x-www-form-urlencoded',
                 'Accept' => 'application/json'
-            ]
-        );
+            ]);
     }
 
-    /**
-     * Login User
-     *
-     * @param Request request
-     * @return Json $mixed
-     */
     public function login (Request $request)
     {
-        $this->request = $request;
-        $this->auth($this->request);
+        $data = $this->auth($request);
+        if (!$data) {
+            return response()->json([], 401);
+        }
         return response()->json(
             [
-                'message' => 'Account created successfully',
-                'user' => $this->user,
+                'user' => $data['user']
             ],
             200,
             [
-                'Authorization' => 'Bearer ' . $this->tokenResult->accessToken,
+                'Authorization' => 'Bearer '.$data['token'],
                 'Content-Type' => 'application/x-www-form-urlencoded',
                 'Accept' => 'application/json'
             ]
         );
-    }
-
-    /**
-     * Logout User
-     *
-     * @param Request $request
-     * @return void
-     */
-    public function logout (Request $request)
-    {
-        $this->request = $request;
-        $this->request->user()->token()->revoke();
-    }
-
-    /**
-     * Authenticate against credentials
-     *
-     * @param Request $request
-     * @return void
-     */
-    public function auth (Request $request = null, $password = null)
-    {
-        if ($request) {
-            $this->request = $request;
-        }
-        if ($password) {
-            $this->request->password = $password;
-        }
-        $credentials = ['email' => $this->request->email, 'password' => $this->request->password];
-        Auth::attempt($credentials);
-        $this->user = $this->request->user();
-        $this->tokenResult = $this->user->createToken('Users Private Personal Access Token');
-        $token = $this->tokenResult->token;
-        $token->expires_at = Carbon::now()->addWeek(1);
-        if ($this->request->exists('remember_me')) {
-            $token->expires_at = Carbon::now()->addWeeks(12);
-        }
-        $token->save();
-    }
-
-    /**
-     * Return User instance
-     *
-     * @param Request $request
-     * @param Json $mixed
-     */
-    public function user(Request $request)
-    {
-        if ($request) {
-            $this->request = $request;
-        }
-        $this->user = $this->request->user();
-        return response()->json([
-            'user' => $this->user,
-            'role' => $this->user->role
-        ]);
-    }
-
-    /**
-     * Store new User
-     *
-     * @param Request $this->request
-     * @return void
-     */
-    public function store(Request $request = null)
-    {
-        if ($request) {
-            $this->request = $request;
-        }
-        $this->request->email = strtolower($this->request->email);
-        $this->user = new User([
-            'email' => $this->request->email,
-            'password' => bcrypt($this->request->password),
-            'name' => $this->request->name
-        ]);
-        $this->user->save();
-        ProcessRoles::dispatch($this->user, 1);
     }
 }

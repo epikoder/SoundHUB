@@ -16,3 +16,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::group(['middleware' => 'auth:api' //, hub'
+], function () {
+    Route::get('upload', function () {
+        return view('upload');
+    })->name('upload');
+});

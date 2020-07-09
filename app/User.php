@@ -10,72 +10,39 @@ class User extends Authenticatable
 {
     use Notifiable, HasApiTokens;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name', 'email', 'password', 'avatar_url'
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'email_verified_at', 'created_at', 'updated_at'
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * The table to use
-     *
-     * @var string
-     */
     protected $table = 'users';
 
-    /**
-     * Relation to Models\Auth\Roles
-     *
-     * @return Models\Auth\Roles
-     */
     public function roles ()
     {
-        return $this->belongsToMany(Models\Auth\Roles::class);
-    }
-
-    /**
-     * Relation to odels\Auth\Reset
-     *
-     * @return Models\Auth\Reset
-     */
-    public function resets ()
-    {
-        return $this->hasMany(Models\Auth\Reset::class);
+        return $this->belongsToMany(Roles::class);
     }
 
     public function plans ()
     {
-        return $this->belongsToMany(Models\Service\Plans::class);
+        return $this->belongsToMany(Plans::class, 'payments')
+                    ->withPivot('reference', 'expires_at')
+                    ->withTimestamps();
     }
 
-    public function songs ()
+    public function artists ()
     {
-        return $this->hasMany(Models\Products\Songs::class);
+        return $this->hasOne(Artists::class);
     }
 
-    public function albums()
+    public function tracks()
     {
-        return $this->hasMany(Models\Products\Albums::class);
+        return $this->morphMany(Tracks::class, 'trackable');
     }
 }
