@@ -9,8 +9,8 @@ trait MediaHelper
 {
     public function prepare (Request $request)
     {
+        dd(!$request->exists('title'), $request->hasFile('track'));
         if (!$request->exists('title') || !$request->hasFile('track')) {
-            dd($request->title, $request->file());
             return false;
         }
 

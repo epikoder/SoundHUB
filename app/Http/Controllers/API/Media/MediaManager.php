@@ -21,13 +21,6 @@ class MediaManager extends Controller
 
     public function upload (Request $request)
     {
-        /*
-        $clear = new Process([
-            'C:\cygwin64\bin\rm', storage_path('app').'/temp/*jpg'
-        ]); $clear->run();
-        throw new ProcessFailedException($clear);
-        dd($clear->getOutput());
-        */
         $data = $this->prepare($request);
         if (!$data) {
             return view('media.upload', [
