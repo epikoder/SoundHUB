@@ -13,7 +13,11 @@ class Logs extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('logs', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->json('value');
+        });
     }
 
     /**
@@ -23,6 +27,6 @@ class Logs extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('logs');
     }
 }

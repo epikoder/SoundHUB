@@ -19,7 +19,9 @@ class CreateTracksTable extends Migration
             $table->string('artist');
             $table->string('album')->nullable();
             $table->string('genre')->nullable();
-            $table->dateTime('year')->nullable();
+            $table->string('url');
+            $table->string('art')->nullable();
+            $table->integer('year')->nullable();
             $table->unsignedBigInteger('trackable_id')->nullable();
             $table->string('trackable_type')->nullable();
             $table->timestamps();

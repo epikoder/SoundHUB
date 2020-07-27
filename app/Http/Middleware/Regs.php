@@ -16,13 +16,12 @@ class Regs
      */
     public function handle($request, Closure $next)
     {
-        $request->email = strtolower($request->email);
         $signup = Signup::find($request->id);
         if (!$signup) {
-            return response()->json([], 400);
+            return redirect()->route('signup/reg');
         }
         if ($signup->token != $request->token) {
-            return response()->json([], 400);
+            return redirect()->route('signup/reg');
         }
         return $next($request);
     }

@@ -1,0 +1,22 @@
+.ml-1\/4{
+  margin-left: 25%;
+}
+.mr-1\/4{
+  margin-right: 25%;
+}
+.ml-2\/4{
+  margin-left: 50%;
+}
+.mr-2\/4{
+  margin-right: 50%;
+}
+.mr-1\/7{
+  margin-right: 15%;
+}
+.ml-1\/7{
+  margin-left: 15%;
+}
+.input {
+  transition: border-color .3s linear;
+}
+

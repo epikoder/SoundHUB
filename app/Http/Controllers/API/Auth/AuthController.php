@@ -28,64 +28,79 @@ class AuthController extends Controller
         }
         $this->user = new stdClass;
         $this->user->name = $request->name;
-        $this->user->email = $request->email;
+        $this->user->email = strtolower($request->email);
         ProcessRegSignup::dispatch($this->user);
-        return response()->json([], 200);
+        return view('signup.reg-response', [
+            'user' => $this->user
+        ]);
     }
 
     public function verSignup (Request $request)
     {
         $signup = Signup::find($request->id);
         if ($this->user($signup->email)) {
-            return response()->json([], 409);
+            return view('errors.custom', [
+                'code' => 409,
+                'message' => 'Conflict'
+            ]);
         }
-        return response()->json([
-            'name' => $signup->name
-        ], 200);
+        return view('signup.signup',[
+            'user' => $signup
+        ]);
     }
 
     public function signup (Request $request)
     {
         $signup = Signup::find($request->id);
         if ($this->user($signup->email)) {
-            return response()->json([], 409);
+            return view('signup.conflict');
         }
+
         if (!$request->exists('password')) {
-            return response()->json([], 400);
+            return view('signup.signup', [
+                'user' => $signup
+            ]);
         }
+
         $user = new User([
-            'name' => $signup->name,
+            'name' => strtolower($signup->name),
             'email' => $signup->email,
             'password' => bcrypt($request->password)
         ]);
         $user->save();
         $user->roles()->sync(1);
         $data = $this->lazyAuth($user);
+
         return response()->json([
                 'user' => $data['user']
-            ], 200,
+            ],
+            200,
             [
-                'Authorization' => 'Bearer ' . $data['token'],
-                'Content-Type' => 'application/x-www-form-urlencoded',
-                'Accept' => 'application/json'
-            ]);
+                // 'Authorization' => 'Bearer ' . $data['token']
+        ]);
     }
 
     public function login (Request $request)
     {
         $data = $this->auth($request);
         if (!$data) {
-            return response()->json([], 401);
+           return response()->json([], 401);
         }
+        /*
+        return view('dashboard', [
+            'user' => $data['user'],
+            'artist' => $data['user']->artists
+        ]);
+        */
+
         return response()->json(
             [
-                'user' => $data['user']
+                'user' => $data['user'],
+                'artist' => $data['user']->artists
             ],
             200,
             [
-                'Authorization' => 'Bearer '.$data['token'],
-                'Content-Type' => 'application/x-www-form-urlencoded',
-                'Accept' => 'application/json'
+                // 'Authorization' => 'Bearer '.$data['token']
             ]
         );
     }
