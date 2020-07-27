@@ -10,6 +10,7 @@ trait MediaHelper
     public function prepare (Request $request)
     {
         if (!$request->exists('title') || !$request->hasFile('track')) {
+            dd($request->exists('title'), $request->hasFile('track'));
             return false;
         }
 
