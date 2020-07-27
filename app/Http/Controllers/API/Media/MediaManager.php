@@ -21,6 +21,7 @@ class MediaManager extends Controller
 
     public function upload (Request $request)
     {
+        dd($request->all());
         $data = $this->prepare($request);
         if (!$data) {
             return view('media.upload', [
