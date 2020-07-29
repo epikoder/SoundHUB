@@ -52,7 +52,7 @@ Route::namespace('API')->group(function () {
     Route::group(['middleware' => ['auth',]], function () {
         Route::get('/{name}/home', 'Routes\UserController@index')->name('dashboard/user');
         Route::get('/{name}/dashboard', 'Routes\ArtistsController@index')->name('dashboard/artists');
-        Route::post('/{name}/dashboard/social', 'Routes\ArtistsController@uSocial')->name('dashboard/social');
+        Route::post('/{name}/dashboard/social', 'Routes\ArtistsController@social')->name('dashboard/social');
         Route::get('/{name}/dashboard/upload', 'Routes\MediaController@upload')->name('dashboard/upload');
         Route::get('/{name}/dashboard/ablum', 'Routes\MediaController@album')->name('dashboard/album');
         Route::get('/{name}/dashboard/media', 'Routes\MediaController@indexMedia')->name('dashboard/mediaindex');

@@ -27,29 +27,33 @@
                     </p>
                     <div class="flex justify-between ">
                         <p class="w-11/12 xl:h-8 lg:h-8 md:h-8 sm:h-6 lg:text-lg xl:text-lg md:text-md sm:text-sm">
-                            {{$artist->bio}}</p>
-                        <button class="">X</button>
+                            About:{{$artist->bio}}</p>
+                        <button class="">
+                            <img class="w-3 h-3" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNDc3Ljg3MyA0NzcuODczIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA0NzcuODczIDQ3Ny44NzM7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnPg0KCTxnPg0KCQk8cGF0aCBkPSJNMzkyLjUzMywyMzguOTM3Yy05LjQyNiwwLTE3LjA2Nyw3LjY0MS0xNy4wNjcsMTcuMDY3VjQyNi42N2MwLDkuNDI2LTcuNjQxLDE3LjA2Ny0xNy4wNjcsMTcuMDY3SDUxLjINCgkJCWMtOS40MjYsMC0xNy4wNjctNy42NDEtMTcuMDY3LTE3LjA2N1Y4NS4zMzdjMC05LjQyNiw3LjY0MS0xNy4wNjcsMTcuMDY3LTE3LjA2N0gyNTZjOS40MjYsMCwxNy4wNjctNy42NDEsMTcuMDY3LTE3LjA2Nw0KCQkJUzI2NS40MjYsMzQuMTM3LDI1NiwzNC4xMzdINTEuMkMyMi45MjMsMzQuMTM3LDAsNTcuMDYsMCw4NS4zMzdWNDI2LjY3YzAsMjguMjc3LDIyLjkyMyw1MS4yLDUxLjIsNTEuMmgzMDcuMg0KCQkJYzI4LjI3NywwLDUxLjItMjIuOTIzLDUxLjItNTEuMlYyNTYuMDAzQzQwOS42LDI0Ni41NzgsNDAxLjk1OSwyMzguOTM3LDM5Mi41MzMsMjM4LjkzN3oiLz4NCgk8L2c+DQo8L2c+DQo8Zz4NCgk8Zz4NCgkJPHBhdGggZD0iTTQ1OC43NDIsMTkuMTQyYy0xMi4yNTQtMTIuMjU2LTI4Ljg3NS0xOS4xNC00Ni4yMDYtMTkuMTM4Yy0xNy4zNDEtMC4wNS0zMy45NzksNi44NDYtNDYuMTk5LDE5LjE0OUwxNDEuNTM0LDI0My45MzcNCgkJCWMtMS44NjUsMS44NzktMy4yNzIsNC4xNjMtNC4xMTMsNi42NzNsLTM0LjEzMywxMDIuNGMtMi45NzksOC45NDMsMS44NTYsMTguNjA3LDEwLjc5OSwyMS41ODUNCgkJCWMxLjczNSwwLjU3OCwzLjU1MiwwLjg3Myw1LjM4LDAuODc1YzEuODMyLTAuMDAzLDMuNjUzLTAuMjk3LDUuMzkzLTAuODdsMTAyLjQtMzQuMTMzYzIuNTE1LTAuODQsNC44LTIuMjU0LDYuNjczLTQuMTMNCgkJCWwyMjQuODAyLTIyNC44MDJDNDg0LjI1LDg2LjAyMyw0ODQuMjUzLDQ0LjY1Nyw0NTguNzQyLDE5LjE0MnoiLz4NCgk8L2c+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8L3N2Zz4NCg==" />
+                        </button>
                     </div>
                 </div>
             </div>
             <div id="social" class="w-11/12 px-2 flex rounded shadow-md m-auto xl:h-12 lg:h-12 md:h-8 sm:h-6">
                 <div class="flex px-2">
-                    @foreach (json_decode($artist->social) as $social => $val)
-                    <a href="{{json_decode($artist->social)->$social}}" <?php
-                    if (!json_decode($artist->social)->$social) {
+                    <a href="{{env('IG').'/'.(json_decode($artist->social)->instagram)}}" <?php
+                    if (!json_decode($artist->social)->instagram) {
                         echo('class="pointer-events-none cursor-default"');
                     }
                     ?>>
-                        @if ($social == 'instagram')
-                        <img src="{{env('IG_FAV')}}" alt="" class="h-6 w-6 mx-2">
-                        @endif
-                        @if ($social == 'twitter')
-                        <img src="{{env('TW_FAV')}}" alt="" class="h-6 w-6 mx-2">
-                        @endif
+                        <img src="{{env('IG').'/favicon.ico'}}" alt="" class="h-6 w-6 mx-2">
                     </a>
-                    @endforeach
+                    <a href="{{env('IG').'/'.(json_decode($artist->social)->twitter)}}" <?php
+                    if (!json_decode($artist->social)->twitter) {
+                        echo('class="pointer-events-none cursor-default"');
+                    }
+                    ?>>
+                        <img src="{{env('TW').'/favicon.ico'}}" alt="" class="h-6 w-6 mx-2">
+                    </a>
                 </div>
-                <button id="esb" onclick="es()" class="align-text-top">X</button>
+                <button id="esb" onclick="es()" class="align-text-top">
+                    <img class="w-3 h-3" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNDc3Ljg3MyA0NzcuODczIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA0NzcuODczIDQ3Ny44NzM7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnPg0KCTxnPg0KCQk8cGF0aCBkPSJNMzkyLjUzMywyMzguOTM3Yy05LjQyNiwwLTE3LjA2Nyw3LjY0MS0xNy4wNjcsMTcuMDY3VjQyNi42N2MwLDkuNDI2LTcuNjQxLDE3LjA2Ny0xNy4wNjcsMTcuMDY3SDUxLjINCgkJCWMtOS40MjYsMC0xNy4wNjctNy42NDEtMTcuMDY3LTE3LjA2N1Y4NS4zMzdjMC05LjQyNiw3LjY0MS0xNy4wNjcsMTcuMDY3LTE3LjA2N0gyNTZjOS40MjYsMCwxNy4wNjctNy42NDEsMTcuMDY3LTE3LjA2Nw0KCQkJUzI2NS40MjYsMzQuMTM3LDI1NiwzNC4xMzdINTEuMkMyMi45MjMsMzQuMTM3LDAsNTcuMDYsMCw4NS4zMzdWNDI2LjY3YzAsMjguMjc3LDIyLjkyMyw1MS4yLDUxLjIsNTEuMmgzMDcuMg0KCQkJYzI4LjI3NywwLDUxLjItMjIuOTIzLDUxLjItNTEuMlYyNTYuMDAzQzQwOS42LDI0Ni41NzgsNDAxLjk1OSwyMzguOTM3LDM5Mi41MzMsMjM4LjkzN3oiLz4NCgk8L2c+DQo8L2c+DQo8Zz4NCgk8Zz4NCgkJPHBhdGggZD0iTTQ1OC43NDIsMTkuMTQyYy0xMi4yNTQtMTIuMjU2LTI4Ljg3NS0xOS4xNC00Ni4yMDYtMTkuMTM4Yy0xNy4zNDEtMC4wNS0zMy45NzksNi44NDYtNDYuMTk5LDE5LjE0OUwxNDEuNTM0LDI0My45MzcNCgkJCWMtMS44NjUsMS44NzktMy4yNzIsNC4xNjMtNC4xMTMsNi42NzNsLTM0LjEzMywxMDIuNGMtMi45NzksOC45NDMsMS44NTYsMTguNjA3LDEwLjc5OSwyMS41ODUNCgkJCWMxLjczNSwwLjU3OCwzLjU1MiwwLjg3Myw1LjM4LDAuODc1YzEuODMyLTAuMDAzLDMuNjUzLTAuMjk3LDUuMzkzLTAuODdsMTAyLjQtMzQuMTMzYzIuNTE1LTAuODQsNC44LTIuMjU0LDYuNjczLTQuMTMNCgkJCWwyMjQuODAyLTIyNC44MDJDNDg0LjI1LDg2LjAyMyw0ODQuMjUzLDQ0LjY1Nyw0NTguNzQyLDE5LjE0MnoiLz4NCgk8L2c+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8L3N2Zz4NCg==" />
+                </button>
             </div>
         </div>
     </div>
@@ -66,8 +70,18 @@
             </div>
             <div id="mediaI" class="px-5 font-sans text-sm bg-gray-100"></div>
         </div>
-        <div id="metrics"></div>
-        <div id="settings"></div>
+        <div id="metrics" class="flex-col border-2 bg-gray-200 rounded shadow lg:text-lg xl:text-lg">
+            <div class="w-full flex justify-between px-5">
+                <p id="media" class="p-1 w-full cursor-pointer" onclick="me()">Metrics</p>
+            </div>
+            <div id="metricsI" class="px-5 font-sans text-sm bg-gray-100"></div>
+        </div>
+        <div id="settings" class="flex-col border-2 bg-gray-200 rounded shadow lg:text-lg xl:text-lg">
+            <div class="w-full flex justify-between px-5">
+                <p id="settingsI" class="p-1 w-full cursor-pointer" onclick="se()">Settings</p>
+            </div>
+            <div id="mediaI" class="px-5 font-sans text-sm bg-gray-100"></div>
+        </div>
     </div>
 </div>
 
@@ -90,11 +104,11 @@
             @csrf
             <label for="IG">Instagram</label>
             <div class="mb-1">
-                <input type="text" name="instagram" class="w-full px-1 focus:bg-white outline-none border-b-2 focus:border-green-300 input" value="{{json_decode($artist->social)->instagram}}" placeholder="https://www.instagram.com/SoundHUB">
+                <input type="text" name="instagram" class="w-full px-1 focus:bg-white outline-none border-b-2 focus:border-green-300 input" value="{{json_decode($artist->social)->instagram}}" placeholder="SoundHUB">
             </div>
             <label for="IG">Twitter</label>
             <div class="mb-1">
-                <input type="text" name="twitter" class="w-full px-1 focus:bg-white outline-none border-b-2 focus:border-green-300 input" value="{{json_decode($artist->social)->twitter}}" placeholder="https://www.twitter.com/SoundHUB">
+                <input type="text" name="twitter" class="w-full px-1 focus:bg-white outline-none border-b-2 focus:border-green-300 input" value="{{json_decode($artist->social)->twitter}}" placeholder="SoundHUB">
             </div>
             <div class="w-full text-right m-1">
                 <button class="bg-blue-500 text-white p-1">save</button>
@@ -132,6 +146,9 @@
         x = 1;
         return $('#mediaI').show();
     }
+    function pr() {}
+    function me() {}
+    function se() {}
 
     function save () {
         window.NP.start();

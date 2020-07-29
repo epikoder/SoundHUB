@@ -33,8 +33,7 @@ trait MediaHelper
             $art = Storage::putFileAs('songs/' . $data['artist'].'/images', $data['art'], $data['title'] . '_' . time() . '.' .$data['art']->getClientOriginalExtension());
             $data['art'] = $art;
         }
-        $path = Storage::putFileAs('songs/'.$data['artist'], $data['track'], $data['title'].'_'.time().'.'.$data['ext']);
-        $data['track'] = $path;
+        $data['track'] = Storage::putFileAs('songs/'.$data['artist'], $data['track'], $data['title'].'_'.time().'.'.$data['ext']);
         return $data;
     }
 

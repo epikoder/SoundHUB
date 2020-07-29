@@ -19,7 +19,7 @@ class ArtistsController extends Controller
             'artist' => $user->artists
         ]);
     }
-    public function uSocial(Request $request)
+    public function social(Request $request)
     {
         $artist = $request->user()->artists;
         if (!$artist) {

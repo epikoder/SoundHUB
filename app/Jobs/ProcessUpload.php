@@ -37,6 +37,8 @@ class ProcessUpload implements ShouldQueue
      */
     public function handle()
     {
+        $file = 'temp/music.mp3';
+        Storage::disk('local')->put($file, Storage::get($this->data['track']));
         if (PHP_OS == 'WINNT') {
             $eyeD3 = new Process(
                 [
@@ -47,7 +49,7 @@ class ProcessUpload implements ShouldQueue
                     '-A', $this->data['album'],
                     '-Y', $this->data['year'],
                     '-c', 'Downloaded at' . env('APP_NAME') . 'com',
-                    $this->data['track']
+                    storage_path('app') . DIRECTORY_SEPARATOR . $file
                 ],
                 getcwd() . '\..\app\Console\bin',
                 getenv()
@@ -62,7 +64,7 @@ class ProcessUpload implements ShouldQueue
                     '-A', $this->data['album'],
                     '-Y', $this->data['year'],
                     '-c', 'Downloaded at' . env('APP_NAME') . 'com',
-                    $this->data['track']
+                    storage_path('app') . DIRECTORY_SEPARATOR . $file
                 ],
                 getcwd() . DIRECTORY_SEPARATOR . '../app/Console/usr/bin',
                 getenv()
@@ -74,14 +76,14 @@ class ProcessUpload implements ShouldQueue
         }
 
         if (isset($this->data['checkbox'])) {
-            Storage::disk('local')->put('temp/file.mp3', Storage::get($this->data['track']));
-            Storage::disk('local')->put('temp/image.jpg', Storage::get($this->data['art']));
+            $image = 'temp/image.jpg';
+            Storage::disk('local')->put($image, Storage::get($this->data['art']));
             $eyeD3_image = new Process(
                 [
                     'eyeD3',
                     '--add-images',
-                    storage_path('app') . DIRECTORY_SEPARATOR . 'temp/image.jpg:FRONT_COVER',
-                    storage_path('app') . DIRECTORY_SEPARATOR . 'temp/file.mp3'
+                    storage_path('app') . DIRECTORY_SEPARATOR . $image . ':FRONT_COVER',
+                    storage_path('app') . DIRECTORY_SEPARATOR . $file
                 ],
                 getcwd() . '\..\app\Console\bin',
                 getenv()
@@ -90,9 +92,10 @@ class ProcessUpload implements ShouldQueue
             if (!$eyeD3_image->isSuccessful()) {
                 $this->output['eyeD3_image'] = $eyeD3_image->getErrorOutput();
             }
-            Storage::put($this->data['track'], Storage::get('temp/file.mp3'));
-            Storage::delete(['temp/file.mp3', 'temp/image.jpg']);
+            Storage::put($this->data['track'], Storage::disk('local')->get($file));
+            Storage::disk('local')->delete($image);
         }
+        Storage::disk('local')->delete($file);
         $track = $this->data['user']->tracks()->create([
             'title' => $this->data['title'],
             'artist' => $this->data['artist'],
@@ -103,6 +106,7 @@ class ProcessUpload implements ShouldQueue
             'art' => $this->data['art']
         ]);
         $track->save();
+
         DB::table('logs')->insert([
             'name' => 'eyeD3',
             'value' => json_encode($this->output)
