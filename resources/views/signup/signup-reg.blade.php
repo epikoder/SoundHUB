@@ -1,10 +1,6 @@
 @extends('layouts.app')
 @section('title', '| signup')
 
-@section('sidebar')
-    @parent
-@endsection
-
 @section('content')
     <div class="lg:hidden xl:hidden">
         <div>
@@ -22,7 +18,7 @@
 
                 <button type="submit">Submit</button>
             </form>
-        <a href="{{ env('APP_URL').'login'}}">Already have an account?</a>
+        <a href="{{ env('APP_URL').'/login'}}">Already have an account?</a>
         </div>
     </div>
 @endsection

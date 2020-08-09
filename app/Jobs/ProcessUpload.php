@@ -47,7 +47,6 @@ class ProcessUpload implements ShouldQueue
                     '-a', $this->data['artist'],
                     '-G', $this->data['genre'],
                     '-A', $this->data['album'],
-                    '-Y', $this->data['year'],
                     '-c', 'Downloaded at' . env('APP_NAME') . 'com',
                     storage_path('app') . DIRECTORY_SEPARATOR . $file
                 ],
@@ -62,7 +61,6 @@ class ProcessUpload implements ShouldQueue
                     '-a', $this->data['artist'],
                     '-G', $this->data['genre'],
                     '-A', $this->data['album'],
-                    '-Y', $this->data['year'],
                     '-c', 'Downloaded at' . env('APP_NAME') . 'com',
                     storage_path('app') . DIRECTORY_SEPARATOR . $file
                 ],
@@ -101,7 +99,6 @@ class ProcessUpload implements ShouldQueue
             'artist' => $this->data['artist'],
             'album' => $this->data['album'],
             'genre' => $this->data['genre'],
-            'year' => $this->data['year'],
             'url' => $this->data['track'],
             'art' => $this->data['art']
         ]);

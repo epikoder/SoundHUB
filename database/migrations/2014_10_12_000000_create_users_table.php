@@ -19,6 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('avatar_url')->default('/img/avatar.png');
             $table->string('password');
+            $table->tinyInteger('active')->default(1);
             $table->timestamps();
         });
     }

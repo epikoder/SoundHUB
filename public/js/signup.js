@@ -16,7 +16,7 @@ $(document).on('submit', 'form', function (e) {
     form.append('password', $('#p').val());
     axios.post(url, form)
         .then((response) => {
-            location.replace('/user/?id='.concat(c.user.id));
+            location.replace('/pay/plans');
         })
         .catch((response) => {
             location.assign('/');

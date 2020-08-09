@@ -24,7 +24,7 @@ class CreateArtistsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('name')->nullable();
             $table->char('sex')->nullable();
-            $table->string('avatar_url')->nullable();
+            $table->string('avatar_url')->default('/img/avatar.png');
             $table->string('bio')->nullable();
             $table->json('social')->default($social);
             $table->tinyInteger('active')->default(1);

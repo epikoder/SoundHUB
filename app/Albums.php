@@ -7,11 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Albums extends Model
 {
     protected $fillable = [
-        'name', 'genre', 'year'
+        'title', 'artist', 'genre', 'track_num'
     ];
 
     public function tracks ()
     {
         return $this->morphMany(Tracks::class, 'trackable');
+    }
+
+    public function users () {
+        return $this->belongsTo(User::class);
     }
 }

@@ -45,4 +45,14 @@ class User extends Authenticatable
     {
         return $this->morphMany(Tracks::class, 'trackable');
     }
+
+    public function albums () {
+        return $this->hasMany(Albums::class);
+    }
+
+    public function admins ()
+    {
+        return $this->hasOne(Admin::class);
+    }
+
 }

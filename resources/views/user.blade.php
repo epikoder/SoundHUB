@@ -23,9 +23,4 @@
                 </div>
             </div>
         </div>
-    <script>
-        $(document).ready(function () {
-            window.NP.done();
-        })
-    </script>
 @endsection

@@ -83,8 +83,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'admin@soundhub.com'),
-        'name' => env('MAIL_FROM_NAME', 'SoundHUB'),
+        'address' => env('MAIL_FROM_ADDRESS', 'admin@' . env('APP_NAME') . '.com'),
+        'name' => env('MAIL_FROM_NAME', env('APP_NAME')),
     ],
 
     /*

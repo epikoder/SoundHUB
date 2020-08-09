@@ -17,12 +17,10 @@
         </form>
     </div>
 </div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script type="module">
     import { vi, sc, gc, boot } from '/js/app.js';
     var c = boot ();
-    $(document).ready(function (){
-        window.NP.done();
-    })
     $(document).on('submit', 'form', function (e) {
         e.preventDefault();
         window.NP.start();
@@ -34,13 +32,14 @@
                 c.artist = response.data.artist;
                 c.media = response.data.media;
                 sc(c);
-                location.assign('/'.concat(c.user.name, '/home'));
+                location.assign('/'.concat(c.artist.name, '/dashboard'));
             })
             .catch((error) => {
-                if (error) {
+                if (error.response.status == 401) {
+                    alert('invalid email or password');
                     window.NP.done();
-                    console.log(error);
-                    $('#alert').show();
+                } else {
+                    location.reload();
                 }
             });
     })

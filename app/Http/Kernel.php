@@ -65,5 +65,6 @@ class Kernel extends HttpKernel
         'cors' => \App\Http\Middleware\Cors::class,
         'regs' => \App\Http\Middleware\Regs::class,
         'hub' => \App\Http\Middleware\SoundHUB::class,
+        'admin' => \App\Http\Middleware\Admin::class,
     ];
 }
