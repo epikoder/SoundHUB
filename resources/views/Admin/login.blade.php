@@ -4,6 +4,7 @@
 <div>
     <div>
         <form action="{{ route('login.admin') }}" method="post">
+            @csrf
             <input type="email" name="email">
             <input type="password" name="password" id="">
             <button type="submit">submit</button>
