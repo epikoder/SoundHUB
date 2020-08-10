@@ -19,7 +19,7 @@ class Genres extends Migration
             $table->string('name');
         });
 
-        $file = fopen(storage_path('app').'../eyeD3-genres.txt', 'r');
+        $file = fopen(storage_path('app').'/../eyeD3-genres.txt', 'r');
         while (!feof($file)) {
             $line = fgets($file);
             $line = trim(str_replace(':', "", $line));
