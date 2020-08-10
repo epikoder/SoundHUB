@@ -101,7 +101,7 @@ Route::namespace('ADMIN')->domain('admin.' . env('APP_URL'))->group(function () 
         Route::post('upload', 'Media\MediaManager@upload')->name('admin.upload');
         Route::post('uploadBulk', 'Media\MediaManager@bulkUpload')->name('admin.uploadBulk');
     });
-    Route::get('login', 'Admin@login')->name('login.admin');
+    Route::post('login', 'Admin@login')->name('login.admin');
 
 
 
