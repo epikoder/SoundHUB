@@ -14,6 +14,10 @@ use Symfony\Component\Process\Process;
 class MediaManager extends Controller
 {
     use Media;
+
+
+    protected $output = array();
+    
     public function upload (Request $request)
     {
         $data = $this->save($request);
@@ -32,10 +36,12 @@ class MediaManager extends Controller
     {
         $data = $this->saveBulk($request);
         if (!$data) {
-            return view('Admin.media', [
+            return response()->json([
                 'message' => 'not successful'
             ]);
         }
+        
+
         //////
         $this->data = $data;
 
@@ -50,15 +56,16 @@ class MediaManager extends Controller
         $album->save();
 
         for($a = 1; $a <= $data['num']; $a++) {
-            $file = 'temp/'.Str::random().'mp3';
+            $rand = Str::random();
+            $file = 'temp/'.$rand.'mp3';
             Storage::disk('local')->put($file, Storage::get($this->data['tracks'][$a]['track']));
 
             if (PHP_OS == 'WINNT') {
                 $eyeD3 = new Process(
                     [
                         'eyeD3',
-                        '-t', $this->data['tracks'][$a]['title'],
-                        '-a', $this->data['tracks'][$a]['artist'],
+                        '-t', $this->data['tracks']->$a->title,
+                        '-a', $this->data['tracks']->$a->artist,
                         '-b', $this->data['album_artist'],
                         '-n', $a,
                         '-A', $this->data['title'],
@@ -73,8 +80,8 @@ class MediaManager extends Controller
                 $eyeD3 = new Process(
                     [
                         'eyeD3',
-                        '-t', $this->data['tracks'][$a]['title'],
-                        '-a', $this->data['tracks'][$a]['artist'],
+                        '-t', $this->data['tracks']->$a->title,
+                        '-a', $this->data['tracks']->$a->artist,
                         '-b', $this->data['album_artist'],
                         '-n', $a,
                         '-A', $this->data['title'],
@@ -93,7 +100,7 @@ class MediaManager extends Controller
 
 
             if (isset($this->data['art'])) {
-                $image = 'temp/' . Str::random() . '.img';
+                $image = 'temp/' . $rand. '.img';
                 Storage::disk('local')->put($image, Storage::get($this->data['art']));
                 if (PHP_OS == 'WINNT') {
                     $eyeD3_image = new Process(
@@ -129,10 +136,10 @@ class MediaManager extends Controller
             Storage::put($this->data['tracks'][$a]['track'], Storage::disk('local')->get($file));
             Storage::disk('local')->delete($file);
             $album->tracks()->create([
-                'title' => $this->data['tracks'][$a]['title']. $this->data['tracks'][$a]['feat'],
-                'artist' => $this->data['tracks'][$a]['artist'],
+                'title' => $this->data['tracks']->$a->title. $this->data['tracks']->$a->feat,
+                'artist' => $this->data['tracks']->$a->artist,
                 'genre' => $this->data['genre'],
-                'url' => $this->data['tracks'][$a]['track'],
+                'url' => $this->data['tracks']->$a->track,
                 'art' => $this->data['art'],
                 'admin' => $this->data['admin']
             ]);
@@ -141,5 +148,8 @@ class MediaManager extends Controller
             'name' => 'eyeD3',
             'value' => json_encode($this->output)
         ]);
+
+        /////////
+        return response()->json(['done'=> $data]);
     }
 }

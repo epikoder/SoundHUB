@@ -19,6 +19,12 @@ class AuthController extends Controller
     /**
      * @param Request $request
      */
+    public function regSignupRoute(Request $request) {
+        if ($request->user()->artists) {
+            return redirect()->route('dashboard/artists',['name' => $request->user()->artists->name]);
+        }
+        return view('signup.signup-reg');
+    }
     public function regSignup(Request $request)
     {
         $user = $request->user();
@@ -84,6 +90,10 @@ class AuthController extends Controller
                 // 'Authorization' => 'Bearer ' . $data['token']
             ]
         );
+    }
+
+    public function loginRoute() {
+        return view('login');
     }
 
     public function login(Request $request)

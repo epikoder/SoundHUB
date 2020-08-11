@@ -36,7 +36,8 @@ class ProcessUpload implements ShouldQueue
      */
     public function handle()
     {
-        $file = 'temp/'.Str::random().'.mp3';
+        $rand = Str::random();
+        $file = 'temp/'.$rand.'.mp3';
         Storage::disk('local')->put($file, Storage::get($this->data['track']));
         if (PHP_OS == 'WINNT') {
             $eyeD3 = new Process(
@@ -73,7 +74,7 @@ class ProcessUpload implements ShouldQueue
         }
 
         if (isset($this->data['art'])) {
-            $image = 'temp/'.Str::random().'.img';
+            $image = 'temp/'.$rand.'.img';
             Storage::disk('local')->put($image, Storage::get($this->data['art']));
             $eyeD3_image = new Process(
                 [

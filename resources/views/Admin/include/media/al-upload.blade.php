@@ -47,13 +47,13 @@
                             @endforeach
                         </select>
                         <small class="px-2 text-lg">feat : </small>
-                        <input id="feat" type="text" name="feat1"
+                        <input type="text" name="feat1"
                             class="outline-none px-2 border-b-2 input focus:border-green-400">
                     </div>
                     <div>
                         <input type="checkbox" checked disabled>
                         <input type="hidden" name="check1" id="check1" value="1" readonly>
-                        <input id="track1" type="file" name="track1" accept="audio/*" class="inline-block" required>
+                        <input type="file" name="track1" accept="audio/*" class="inline-block" required>
                     </div>
                 </div>
                 <div id="t2" class="py-2">
@@ -68,13 +68,13 @@
                             @endforeach
                         </select>
                         <small class="px-2 text-lg">feat : </small>
-                        <input id="feat" type="text" name="feat2"
+                        <input type="text" name="feat2"
                             class="outline-none px-2 border-b-2 input focus:border-green-400">
                     </div>
                     <div>
                         <input type="checkbox" checked disabled>
                         <input type="hidden" name="check2" id="check2" value="1" readonly>
-                        <input id="track2" type="file" name="track2" accept="audio/*" class="inline-block" required>
+                        <input type="file" name="track2" accept="audio/*" class="inline-block" required>
                     </div>
                 </div>
             </div>
@@ -84,6 +84,10 @@
             </div>
         </div>
         <div>
+            <div class="progress">
+                <div class="bar"></div>
+                <div class="percent"></div>
+            </div>
             <div id="num"></div>
             <button id="submit" type="submit" class="p-2 bg-blue-500 text-white rounded">Upload</button>
         </div>
@@ -92,9 +96,8 @@
 <script type="module">
     var num = 2;
     var max = 24;
-    var pass = null;
 
-    $('#add').on('click', function () {
+    $('#add').on('click', function() {
         if (num >= 24) {
             return false;
         }
@@ -110,47 +113,81 @@
                             @endforeach
                         </select>
                         <small class="px-2 text-lg">feat : </small>
-                        <input id="feat" type="text" name="feat` + num + `" class="outline-none px-2 border-b-2 input focus:border-green-400">
+                        <input type="text" name="feat` + num + `" class="outline-none px-2 border-b-2 input focus:border-green-400">
                     </div>
                     <div>
                         <input type="checkbox" name="check` + num + `" id="check` + num + `" checked readonly>
-                        <input id="track` + num + `" type="file" name="track` + num + `" accept="audio/*" class="inline-block" required>
+                        <input ` + num + `" type="file" name="track` + num + `" accept="audio/*" class="inline-block" required>
                     </div>
                 </div>`
         );
         $('.select2').select2();
-        pass = null;
     });
-    $('#remove').on('click', function () {
+    $('#remove').on('click', function() {
         for (var i = 3; i <= num; i++) {
             if ($('#check' + i).is(':checked')) {
                 $('#t' + i).remove();
             }
         }
-        pass = null;
     });
 
-    $('#track1').bind('change', function() {
-        var size = Math.round(this.files[0].size / 1024 / 1024 * 10) / 10;
-        if (size >= 15) {
-            alert('file too large');
+    function validate() {
+        if ($('input[name=_token]').fieldValue() == "") {
             return false;
         }
+    }
 
-    })
-    $('#submit').on('click', function () {
-        pass = true;
+    function append() {
+        $('#nux').remove();
+        $('#num').append(
+            `<input id="nux" type="hidden" name="num" value="` + num + `"/>`
+        )
+    }
+
+    function callback(response) {
+        console.log(response)
+    }
+
+    function errorcall(response) {
+        console.log(response)
+    }
+    $('form').ajaxForm({
+        beforeSubmit: validate,
+        beforeSend: append,
+        uploadProgress: function(event, position, total, percentComplete) {
+            var bar = $('.bar');
+            var percent = $('.percent');
+            var percentVal = percentComplete + '%';
+            bar.width(percentVal);
+            percent.html(percentVal);
+        },
+        success: callback,
+        error: errorcall
     });
 
-
-    $(document).on('submit', 'form', function(e) {
-        if (!pass) {
-            e.preventDefault();
-        }
-        $('#num').append(
-            `<input type="hidden" name="num" value="`+num+`"/>`
-        )
-        window.NP.start();
-    })
-
 </script>
+<style>
+    .progress {
+        position: relative;
+        width: 100%;
+        border: 1px solid #7F98B2;
+        padding: 1px;
+        border-radius: 3px;
+    }
+
+    .bar {
+        background-color: #B4F5B4;
+        width: 0%;
+        height: 25px;
+        border-radius: 3px;
+    }
+
+    .percent {
+        position: absolute;
+        display: inline-block;
+        top: 3px;
+        left: 48%;
+        color: #7F98B2;
+    }
+
+</style>

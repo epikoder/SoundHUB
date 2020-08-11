@@ -11,6 +11,7 @@
         integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha512-YUkaLm+KJ5lQXDBdqBqk7EVhJAdxRnVdT2vtCzwPHSweCzyMgYV/tgGF4/dCyqtCC2eCphz0lRQgatGVdfR0ww==" crossorigin="anonymous"></script>
     <script type="module">
         import NP from 'https://cdn.jsdelivr.net/npm/nprogress@1.0.0-1/dist/nprogress.mjs';
         window.NP = NP;
@@ -29,6 +30,42 @@
             @yield('content')
         </div>
     </div>
+    <script type="module">
+        $(document).ready(function () {window.NP.done()});
+    </script>
+    <style lang="css">
+        /* Make clicks pass-through */
+        #nprogress {
+            pointer-events: none;
+        }
+
+        #nprogress .bar {
+            background: rgb(0, 162, 255);
+
+            position: fixed;
+            z-index: 1031;
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 8px;
+        }
+
+        /* Fancy blur effect */
+        #nprogress .peg {
+            display: block;
+            position: absolute;
+            right: 0px;
+            width: 100px;
+            height: 100%;
+            box-shadow: 0 0 10px #29d, 0 0 5px #29d;
+            opacity: 1.0;
+
+            -webkit-transform: rotate(3deg) translate(0px, -4px);
+            -ms-transform: rotate(3deg) translate(0px, -4px);
+            transform: rotate(3deg) translate(0px, -4px);
+        }
+    </style>
 </body>
 
 </html>

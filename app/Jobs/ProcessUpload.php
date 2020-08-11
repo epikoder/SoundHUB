@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
+use Illuminate\Support\Str;
 
 class ProcessUpload implements ShouldQueue
 {
@@ -37,7 +38,8 @@ class ProcessUpload implements ShouldQueue
      */
     public function handle()
     {
-        $file = 'temp/music.mp3';
+        $rand = Str::random();
+        $file = 'temp/'.$rand.'.mp3';
         Storage::disk('local')->put($file, Storage::get($this->data['track']));
         if (PHP_OS == 'WINNT') {
             $eyeD3 = new Process(
@@ -74,7 +76,7 @@ class ProcessUpload implements ShouldQueue
         }
 
         if (isset($this->data['checkbox'])) {
-            $image = 'temp/image.jpg';
+            $image = 'temp/'.$rand.'.jpg';
             Storage::disk('local')->put($image, Storage::get($this->data['art']));
             $eyeD3_image = new Process(
                 [
@@ -108,10 +110,5 @@ class ProcessUpload implements ShouldQueue
             'name' => 'eyeD3',
             'value' => json_encode($this->output)
         ]);
-    }
-
-    public function failed ()
-    {
-        dd($this->output);
     }
 }

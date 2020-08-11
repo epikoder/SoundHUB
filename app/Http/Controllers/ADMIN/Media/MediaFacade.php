@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-
 trait Media
 {
 
@@ -45,7 +44,7 @@ trait Media
     {
         $validation = Validator::make($request->all(), [
             'artist' => 'required|int',
-            'art' => 'mimes:jpeg,bmp,png',
+            'art' => 'nullable|mimes:jpeg,bmp,png',
             'title' => 'required|string'
         ]);
         if ($validation->fails() || ($request->num > 24)) {
@@ -67,19 +66,18 @@ trait Media
                 $title = 'title'.$x;
                 $artist = 'artist'.$x;
                 $track = 'track'.$x;
-                $tracks[++$i] = [
-                    'artist' => $request->$artist,
-                    'track' => $request->$track,
-                    'title' => $request->$title,
-                    'feat' => null
-                ];
+                $tracks = json_decode('{}'); $var = json_decode('{}');
+                $var->artist = $request->$artist;
+                $var->track = $request->$track;
+                $var->title = $request->$title;
+                $var->feat = null;
+                
                 $feat = 'feat'.$x;
                 if ($request->$feat) {
                     $feat = ' (feat '.$request->$feat.' )';
-                    $tracks[$i] = [
-                        'feat' => $feat
-                    ];
+                    $var->feat = $feat;
                 }
+                $tracks->$x = $var;
             }
         }
         $data['album_artist'] = $request->artist;
@@ -87,13 +85,12 @@ trait Media
         $data['title'] = $request->title;
         $data['genre'] = $this->genre($request->genre, $request->c_genre);
         $data['admin'] = $request->user()->admins->uuid;
-        if ($request->exists('art')) {
+        if ($request->art) {
             $art = $request->file('art');
             $data['art'] = Storage::putFileAs('songs/' . $data['album_artist'].DIRECTORY_SEPARATOR.$data['title'], $art, 'front_cover'. '.' . $art->getClientOriginalExtension());
         }
         for ($a = 1; $a <= $i; $a++) {
-            $tracks[$a]['track'] =
-            Storage::putFileAs('songs/' . $data['album_artist'].DIRECTORY_SEPARATOR.$data['title'], $tracks[$a]['track'], $tracks[$a]['title'] . '.' . $tracks[$a]['track']->getClientOriginalExtension());
+            $tracks->$a->track = Storage::putFileAs('songs/' . $data['album_artist'].DIRECTORY_SEPARATOR.$data['title'], $tracks->$a->track, $tracks->$a->title . '.' . $tracks->$a->track->getClientOriginalExtension());
         }
         $data['tracks'] = $tracks;
         $data['num'] = $i;
