@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Tracks extends Model
 {
     protected $fillable = [
-        'title', 'genre', 'artist', 'album','admin','url', 'trackable_id', 'trackable_type'
+        'title', 'genre', 'artist', 'album_id','admin','url','art', 'trackable_id', 'trackable_type'
     ];
 
     protected $hidden = [

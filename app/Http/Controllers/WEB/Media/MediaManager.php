@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\WEB\Media;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessBulkUpload;
 use App\Jobs\ProcessUpload;
-use App\Tracks;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Process\Process;
+use Illuminate\Support\Str;
 
 class MediaManager extends Controller
 {
@@ -21,7 +25,6 @@ class MediaManager extends Controller
             $user = $request->user();
             return view('media.upload', [
                 'message' => 'missing some datas',
-                ////
                 'user' => $user,
                 'artist' => $user->artists
             ]);
@@ -29,7 +32,6 @@ class MediaManager extends Controller
         ProcessUpload::dispatch($data);
         return view('media.upload', [
             'message' => 'Upload Successfull',
-            ////
             'user' => $request->user(),
             'artist' => $request->user()->artists
         ]);
@@ -37,13 +39,14 @@ class MediaManager extends Controller
 
     public function bulkUpload(Request $request)
     {
-    }
+        $data = $this->prepareBulk($request);
+        if (!$data) {
+            return response()->json([
+                'error' => 'not successful'
+            ]);
+        }
 
-    public function pla(Request $request)
-    {
-        $track = Tracks::find(1);
-        dd($track);
-        $track->year = date('Y');
-        $track->save();
+        ProcessBulkUpload::dispatch($data);
+        return response()->json(['status' => 'Upload Successfully']);
     }
 }

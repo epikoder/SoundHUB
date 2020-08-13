@@ -50,7 +50,7 @@ class ProcessUpload implements ShouldQueue
                     '-c', 'Downloaded at' . env('APP_NAME') . 'com',
                     storage_path('app') . DIRECTORY_SEPARATOR . $file
                 ],
-                getcwd() . '\..\app\Console\bin',
+                getcwd() . '\app\Console\bin',
                 getenv()
             );
         } else {
@@ -64,7 +64,7 @@ class ProcessUpload implements ShouldQueue
                     '-c', 'Downloaded at' . env('APP_NAME') . 'com',
                     storage_path('app') . DIRECTORY_SEPARATOR . $file
                 ],
-                getcwd() . DIRECTORY_SEPARATOR . '../app/Console/usr/bin',
+                getcwd() . DIRECTORY_SEPARATOR . '/app/Console/usr/bin',
                 getenv()
             );
         }
@@ -76,16 +76,29 @@ class ProcessUpload implements ShouldQueue
         if (isset($this->data['art'])) {
             $image = 'temp/'.$rand.'.img';
             Storage::disk('local')->put($image, Storage::get($this->data['art']));
-            $eyeD3_image = new Process(
-                [
-                    'eyeD3',
-                    '--add-images',
-                    storage_path('app') . DIRECTORY_SEPARATOR . $image . ':FRONT_COVER',
-                    storage_path('app') . DIRECTORY_SEPARATOR . $file
-                ],
-                getcwd() . '\..\app\Console\bin',
-                getenv()
-            );
+            if (PHP_OS == 'WINNT') {
+                $eyeD3_image = new Process(
+                    [
+                        'eyeD3',
+                        '--add-image',
+                        str_replace('C:', 'C\:', storage_path('app') . DIRECTORY_SEPARATOR . $image) . ':FRONT_COVER',
+                        storage_path('app') . DIRECTORY_SEPARATOR . $file
+                    ],
+                    getcwd() . '\app\Console\bin',
+                    getenv()
+                );
+            } else {
+                $eyeD3_image = new Process(
+                    [
+                        'eyeD3',
+                        '--add-image',
+                        storage_path('app') . DIRECTORY_SEPARATOR . $image . ':FRONT_COVER',
+                        storage_path('app') . DIRECTORY_SEPARATOR . $file
+                    ],
+                    getcwd() . '/app/Console/usr/bin',
+                    getenv()
+                );
+            }
             $eyeD3_image->run();
             if (!$eyeD3_image->isSuccessful()) {
                 $this->output['eyeD3_image'] = $eyeD3_image->getErrorOutput();

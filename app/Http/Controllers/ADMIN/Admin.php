@@ -41,6 +41,6 @@ class Admin extends Controller
 
     public function password(Request $request)
     {
-        
+
     }
 }

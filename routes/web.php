@@ -28,7 +28,7 @@ Route::namespace('WEB')->domain(env('APP_URL'))->group(function () {
         Route::get('signup/ver', 'Auth\AuthController@verSignup')->name('signup.ver');
         Route::post('signup', 'Auth\AuthController@signup')->name('signup.main');
     });
-    
+
     // Login
     Route::post('login', 'Auth\AuthController@login')->name('login');
     Route::get('login', 'Auth\AuthController@loginRoute')->name('getLogin');
@@ -45,6 +45,8 @@ Route::namespace('WEB')->domain(env('APP_URL'))->group(function () {
     // Media & User
     Route::group(['middleware' => ['auth',]], function () {
         Route::post('upload', 'Media\MediaManager@upload')->name('media.upload');
+        Route::post('uploadBulk', 'Media\MediaManager@bulkUpload')->name('media.bulk');
+        
         Route::post('/{name}/dashboard/social', 'Routes\ArtistsController@social')->name('dashboard.social');
         Route::post('/{name}/dashboard/about', 'Routes\ArtistsController@about')->name('dashboard.about');
 
@@ -59,8 +61,8 @@ Route::namespace('WEB')->domain(env('APP_URL'))->group(function () {
         Route::get('/{name}/dashboard/promo_stats', 'Routes\ArtistsController@promostats')->name('dashboard/promostats');
     });
 
-    
-    Route::get('/', 'Routes\MediaController@index')->name('home');    
+
+    Route::get('/', 'Routes\MediaController@index')->name('home');
 });
 //////////////// W E B ////////////////////////////////
 
@@ -72,7 +74,7 @@ Route::namespace('ADMIN')->domain('admin.' . env('APP_URL'))->group(function () 
 
     // Login
     Route::get('/', 'Views@index')->name('login/admin');
-    Route::get('login', 'Admin@login')->name('login.admin');
+    Route::post('login', 'Admin@login')->name('login.admin');
 
     Route::group(['middleware' => ['auth', 'admin']], function () {
 

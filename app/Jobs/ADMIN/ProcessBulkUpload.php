@@ -18,6 +18,7 @@ class ProcessBulkUpload implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $data = array();
+    protected $output = array();
 
     /**
      * Create a new job instance.
@@ -48,15 +49,15 @@ class ProcessBulkUpload implements ShouldQueue
 
         for ($a = 1; $a <= $this->data['num']; $a++) {
             $rand = Str::random();
-            $file = 'temp/' .$rand . 'mp3';
-            Storage::disk('local')->put($file, Storage::get($this->data['tracks'][$a]['track']));
+            $file = 'temp/' . $rand . '.mp3';
+            Storage::disk('local')->put($file, Storage::get($this->data['tracks']->$a->track));
 
             if (PHP_OS == 'WINNT') {
                 $eyeD3 = new Process(
                     [
                         'eyeD3',
-                        '-t', $this->data['tracks'][$a]['title'],
-                        '-a', $this->data['tracks'][$a]['artist'],
+                        '-t', $this->data['tracks']->$a->title,
+                        '-a', $this->data['tracks']->$a->artist,
                         '-b', $this->data['album_artist'],
                         '-n', $a,
                         '-A', $this->data['title'],
@@ -64,15 +65,15 @@ class ProcessBulkUpload implements ShouldQueue
                         '-c', 'Downloaded at' . env('APP_NAME') . 'com',
                         storage_path('app') . DIRECTORY_SEPARATOR . $file
                     ],
-                    getcwd() . '\..\app\Console\bin',
+                    getcwd() . '\app\Console\bin',
                     getenv()
                 );
             } else {
                 $eyeD3 = new Process(
                     [
                         'eyeD3',
-                        '-t', $this->data['tracks'][$a]['title'],
-                        '-a', $this->data['tracks'][$a]['artist'],
+                        '-t', $this->data['tracks']->$a->title,
+                        '-a', $this->data['tracks']->$a->artist,
                         '-b', $this->data['album_artist'],
                         '-n', $a,
                         '-A', $this->data['title'],
@@ -80,7 +81,7 @@ class ProcessBulkUpload implements ShouldQueue
                         '-c', 'Downloaded at' . env('APP_NAME') . 'com',
                         storage_path('app') . DIRECTORY_SEPARATOR . $file
                     ],
-                    getcwd() . DIRECTORY_SEPARATOR . '../app/Console/usr/bin',
+                    getcwd() . DIRECTORY_SEPARATOR . '/app/Console/usr/bin',
                     getenv()
                 );
             }
@@ -95,26 +96,26 @@ class ProcessBulkUpload implements ShouldQueue
                 Storage::disk('local')->put($image, Storage::get($this->data['art']));
                 if (PHP_OS == 'WINNT') {
                     $eyeD3_image = new Process(
-                        [
-                            'eyeD3',
-                            '--add-images',
-                            storage_path('app') . DIRECTORY_SEPARATOR . $image . ':FRONT_COVER',
-                            storage_path('app') . DIRECTORY_SEPARATOR . $file
-                        ],
-                        getcwd() . '\..\app\Console\bin',
-                        getenv()
-                    );
+                            [
+                                'eyeD3',
+                                '--add-image',
+                                str_replace('C:', 'C\:', storage_path('app') . DIRECTORY_SEPARATOR . $image) . ':FRONT_COVER',
+                                storage_path('app') . DIRECTORY_SEPARATOR . $file
+                            ],
+                            getcwd() . '\app\Console\bin',
+                            getenv()
+                        );
                 } else {
                     $eyeD3_image = new Process(
-                        [
-                            'eyeD3',
-                            '--add-images',
-                            storage_path('app') . DIRECTORY_SEPARATOR . $image . ':FRONT_COVER',
-                            storage_path('app') . DIRECTORY_SEPARATOR . $file
-                        ],
-                        getcwd() . '/../app/Console/usr/bin',
-                        getenv()
-                    );
+                            [
+                                'eyeD3',
+                                '--add-image',
+                                storage_path('app') . DIRECTORY_SEPARATOR . $image . ':FRONT_COVER',
+                                storage_path('app') . DIRECTORY_SEPARATOR . $file
+                            ],
+                            getcwd() . '/app/Console/usr/bin',
+                            getenv()
+                        );
                 }
 
                 $eyeD3_image->run();
@@ -124,13 +125,14 @@ class ProcessBulkUpload implements ShouldQueue
                 Storage::disk('local')->delete($image);
             }
 
-            Storage::put($this->data['tracks'][$a]['track'], Storage::disk('local')->get($file));
+            Storage::put($this->data['tracks']->$a->track, Storage::disk('local')->get($file));
             Storage::disk('local')->delete($file);
             $album->tracks()->create([
-                'title' => $this->data['tracks'][$a]['title'] . $this->data['tracks'][$a]['feat'],
-                'artist' => $this->data['tracks'][$a]['artist'],
+                'title' => $this->data['tracks']->$a->title . $this->data['tracks']->$a->feat,
+                'artist' => $this->data['tracks']->$a->artist,
+                'album_id' => $album->id,
                 'genre' => $this->data['genre'],
-                'url' => $this->data['tracks'][$a]['track'],
+                'url' => $this->data['tracks']->$a->track,
                 'art' => $this->data['art'],
                 'admin' => $this->data['admin']
             ]);

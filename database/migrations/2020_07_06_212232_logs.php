@@ -17,7 +17,7 @@ class Logs extends Migration
             $table->id();
             $table->string('name');
             $table->json('value');
-            $table->timestamps();
+            $table->timestamp('created_at');
         });
     }
 

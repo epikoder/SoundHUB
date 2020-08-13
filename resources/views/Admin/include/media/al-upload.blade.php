@@ -84,12 +84,11 @@
             </div>
         </div>
         <div>
-            <div class="progress">
+            <div class="progress my-2">
                 <div class="bar"></div>
-                <div class="percent"></div>
+                <div class="percent">0%</div>
             </div>
-            <div id="num"></div>
-            <button id="submit" type="submit" class="p-2 bg-blue-500 text-white rounded">Upload</button>
+            <button id="submit" type="submit" class="p-2 bg-blue-400 text-white rounded">Upload</button>
         </div>
     </form>
 </div>
@@ -125,7 +124,7 @@
     });
     $('#remove').on('click', function() {
         for (var i = 3; i <= num; i++) {
-            if ($('#check' + i).is(':checked')) {
+            if (!($('#check' + i).is(':checked'))) {
                 $('#t' + i).remove();
             }
         }
@@ -137,23 +136,29 @@
         }
     }
 
-    function append() {
-        $('#nux').remove();
-        $('#num').append(
-            `<input id="nux" type="hidden" name="num" value="` + num + `"/>`
-        )
-    }
-
     function callback(response) {
         console.log(response)
+        $('#submit').removeClass('bg-blue-700');
+        $('#submit').prop('disabled', false);
+        alert(response.status);
+        location.reload();
     }
 
-    function errorcall(response) {
-        console.log(response)
+    function errorcall(error) {
+        $('#submit').removeClass('bg-blue-700');
+        $('#submit').prop('disabled', false);
+        alert(response.error);
     }
+
     $('form').ajaxForm({
+        data: {
+            num: num
+        },
         beforeSubmit: validate,
-        beforeSend: append,
+        beforeSend: function() {
+            $('#submit').addClass('bg-blue-700');
+            $('#submit').prop('disabled', true);
+        },
         uploadProgress: function(event, position, total, percentComplete) {
             var bar = $('.bar');
             var percent = $('.percent');
@@ -176,7 +181,7 @@
     }
 
     .bar {
-        background-color: #B4F5B4;
+        background-color: #554ae4;
         width: 0%;
         height: 25px;
         border-radius: 3px;
@@ -187,7 +192,7 @@
         display: inline-block;
         top: 3px;
         left: 48%;
-        color: #7F98B2;
+        color: #020a13;
     }
 
 </style>

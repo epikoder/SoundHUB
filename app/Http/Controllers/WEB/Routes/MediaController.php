@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Tracks;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\DB;
 
 class MediaController extends Controller
 {
@@ -27,6 +28,19 @@ class MediaController extends Controller
 
         return view('media.upload', [
             'artist' => $artist
+        ]);
+    }
+
+    public function album (Request $request) {
+        $artist = $request->user()->artists;
+        if (!$artist) {
+            return view('login');
+        }
+        $genres = DB::table('genres')->get();
+        return view('media.uploadbulk',[
+            'user' => $request->user(),
+            'artist' => $artist,
+            'genres' => $genres
         ]);
     }
 }

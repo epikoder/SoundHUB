@@ -19,7 +19,7 @@ class CreateAlbumsTable extends Migration
             $table->string('title');
             $table->char('artist', 50);
             $table->string('genre');
-            $table->integer('track_num');
+            $table->unsignedInteger('track_num');
             $table->timestamps();
             $table->foreign('user_id')
             ->references('id')
