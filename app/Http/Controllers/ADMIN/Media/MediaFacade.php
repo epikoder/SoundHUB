@@ -33,6 +33,7 @@ trait Media
         $data['album'] = env('APP_NAME');
         $data['art'] = null;
         if ($request->art) {
+            $data['append_art'] = $request->append_art;
             $art = $request->file('art');
             $data['art'] = Storage::putFileAs('songs/' . $data['artist'] . '/images', $art, $data['title'] . '.' . $art->getClientOriginalExtension());
         }
@@ -88,6 +89,7 @@ trait Media
         $data['genre'] = $this->genre($request->genre, $request->c_genre);
         $data['admin'] = $request->user()->admins->uuid;
         if ($request->art) {
+            $data['append_art'] = $request->append_art;
             $art = $request->file('art');
             $data['art'] = Storage::putFileAs('songs/' . $data['album_artist'].DIRECTORY_SEPARATOR.$data['title'], $art, 'front_cover'. '.' . $art->getClientOriginalExtension());
         }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Signup;
+use App\Models\Signup;
 use Closure;
 
 class Regs

@@ -6,10 +6,12 @@
         <p>
             Thank you for choosing {{env('APP_NAME')}}, we are delighted to bring to have you. <br> Please click the link below
             to continue your registeration.
+
+            this is test response
         </p>
-        <p><a href="{{env('APP_URL').route('signup.ver').'/?id'.$signup->id'&'.'token'.$signup->token}}">
+        <p><a href="{{route('signup.ver').'/?id='.$signup->id.'&'.'token='.$signup->token}}">
             <button class="p-1 bg-blue-500 text-white rounded">
-                continue
+                Complete Signup
             </button>
             </a>
         </p>

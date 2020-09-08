@@ -14,16 +14,19 @@ class Payments extends Migration
     public function up()
     {
         Schema::create('payments', function (Blueprint $table) {
-            $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('plans_id');
             $table->string('reference')->unique();
+            $table->string('response');
             $table->timestamps();
             $table->dateTime('expires_at');
             $table->foreign('user_id')
             ->references('id')
             ->on('users')
             ->onDelete('cascade');
+        });
+
+        Schema::table('payments', function (Blueprint $table) {
             $table->foreign('plans_id')
             ->references('id')
             ->on('plans')
@@ -38,6 +41,6 @@ class Payments extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('payments');
+        Schema::dropIfExists(env('APP_NAME_SMALL') . '_payments');
     }
 }

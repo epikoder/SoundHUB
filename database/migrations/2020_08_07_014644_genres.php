@@ -38,6 +38,6 @@ class Genres extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('genres');
     }
 }

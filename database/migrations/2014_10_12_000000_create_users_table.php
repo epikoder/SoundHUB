@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MediaQuery;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,10 +18,10 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('avatar_url')->default('/img/avatar.png');
             $table->string('password');
             $table->tinyInteger('active')->default(1);
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

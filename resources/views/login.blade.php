@@ -2,53 +2,27 @@
 @section('title', 'login')
 
 @section('content')
-    <div id="alert" class="flex w-full align-middle content-center items-center justify-center">
-        <div class="flex text-center mx-auto w-1/4 bg-white px-12 border-2 border-gray-300 text-red-300">
-
-        </div>
-    </div>
-    <div>
-        <div>
-            <form name="form" action={{ route('login') }} method="post">
+    <div class="bg-gray-200 h-f w-full">
+        <div class="flex py-12">
+            <form name="form" action={{ route('login') }} method="post"
+                class="m-auto sm:w-5/6 md:w-3/4 lg:w-2/4 xl:w-1/4 p-8 bg-white border border-gray-600 rounded">
+                <div class="flex">
+                    <img loading="lazy" src={{ asset('favicon.ico') }} class="m-auto h-10 w-10">
+                </div>
                 @csrf
-                <input id="email" type="email" name="email" required>
-                <input id="password" type="password" name="password" required>
-                <button type="submit">Login</button>
+                <div class="block p-4">
+                    <input type="email" name="email" class="email w-full border-b border-gray-600 focus:border-teal-500 hover:border-teal-500 input focus:outline-none my-2 p-1" placeholder="johndoe@domain.com" required>
+                    <div class="flex">
+                        <input type="password" name="password" class="password w-full border-b border-gray-600 focus:border-teal-500 hover:border-teal-500 input focus:outline-none my-2 p-1" placeholder="*********" required>
+                        <small class="my-2 px-1 eye eye-open cursor-pointer">Show</small>
+                    </div>
+                    <button type="submit"
+                        class="submit my-2 input-bg text-black border-black border rounded-full px-2 py-1 hover:text-white hover:bg-black">Login</button>
+                </div>
             </form>
         </div>
     </div>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script type="module">
-        import {
-            vi,
-            sc,
-            gc,
-            boot
-        } from '/js/app.js';
-        var c = boot();
-        $(document).on('submit', 'form', function(e) {
-            e.preventDefault();
-            window.NP.start();
-            var url = $('form').attr('action');
-            var form = new FormData($('form').get(0));
-            axios.post(url, form)
-                .then((response) => {
-                    c.user = response.data.user;
-                    c.artist = response.data.artist;
-                    c.media = response.data.media;
-                    sc(c);
-                    location.assign('/'.concat(c.artist.name, '/dashboard'));
-                })
-                .catch((error) => {
-                    if (error.response.status == 401) {
-                        alert('invalid email or password');
-                        window.NP.done();
-                    } else {
-                        alert('Error:');
-                        location.reload();
-                    }
-                });
-        })
-
-    </script>
+    @push('head')
+        <script type="module" src="/js/app/login.js"></script>
+    @endpush
 @endsection

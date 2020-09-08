@@ -1,12 +1,13 @@
-    <div class="flex w-full h-16 justify-between bg-blue-500 px-12">
+    <nav class="flex w-full h-full justify-between bg-black text-white px-12">
         <div class="w-32">
             <img src="" alt="{{env('APP_NAME')}}">
         </div>
-        <div class="mt-auto mb-auto">
-            <div class="bg-gray-900 rounded">
-                <p class="p-2">
-                    <a href="" class="text-white">Logout</a>
-                </p>
+        <div class="mt-auto mb-auto flex">
+            <div class="px-4">
+                <a href="">preview</a>
+            </div>
+            <div>
+                <img src="" alt="pix">
             </div>
         </div>
-    </div>
+    </nav>

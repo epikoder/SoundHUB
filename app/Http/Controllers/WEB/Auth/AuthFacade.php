@@ -22,12 +22,20 @@ trait AuthFacade
         return User::where('email', $email)->first();
     }
 
-    public function validator ($email)
+    /**
+     * Validate request
+     * @return bool true|false
+     * true passed
+     * false failed
+     */
+    public function validator (Request $request)
     {
         $data = [
-            'email' => $email
+            'name' => $request->name,
+            'email' => $request->email
         ];
         $rules = [
+            'name' => 'required|string|min:6',
             'email' => 'required|email:dns,rfc'
         ];
         return !(Validator::make($data, $rules)->fails());
@@ -44,6 +52,8 @@ trait AuthFacade
         if (!Auth::attempt($credentials)) {
             return false;
         }
+
+        //API
         $user = $request->user();
         $tokenResult = $user->createToken('Users Private Personal Access Token');
         $token = $tokenResult->token;
@@ -52,6 +62,7 @@ trait AuthFacade
             $token->expires_at = Carbon::now()->addMonth(6);
         }
         $token->save();
+        //END API
         return [
             'token' => $tokenResult->accessToken,
             'user' => $user

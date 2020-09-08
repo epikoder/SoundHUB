@@ -6,10 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ProcessBulkUpload;
 use App\Jobs\ProcessUpload;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Symfony\Component\Process\Process;
-use Illuminate\Support\Str;
 
 class MediaManager extends Controller
 {
@@ -23,18 +19,12 @@ class MediaManager extends Controller
         $data = $this->prepare($request);
         if (!$data) {
             $user = $request->user();
-            return view('media.upload', [
-                'message' => 'missing some datas',
-                'user' => $user,
-                'artist' => $user->artists
-            ]);
+            return response()->json([
+                'message' => 'Error: cross check form and try again'
+            ], 400);
         }
         ProcessUpload::dispatch($data);
-        return view('media.upload', [
-            'message' => 'Upload Successfull',
-            'user' => $request->user(),
-            'artist' => $request->user()->artists
-        ]);
+        return response()->json(['message' => 'Successful']);
     }
 
     public function bulkUpload(Request $request)
@@ -42,11 +32,16 @@ class MediaManager extends Controller
         $data = $this->prepareBulk($request);
         if (!$data) {
             return response()->json([
-                'error' => 'not successful'
+                'message' => 'not successful'
             ]);
         }
 
         ProcessBulkUpload::dispatch($data);
-        return response()->json(['status' => 'Upload Successfully']);
+        return response()->json(['message' => 'Upload Successfully']);
+    }
+
+    public function downloadAlbum(Request $request, $type, $artist, $id, $album)
+    {
+
     }
 }

@@ -4,10 +4,11 @@ namespace App\Http\Controllers\WEB\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessRegSignup;
-use App\Signup;
+use App\Models\Signup;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use stdClass;
 
 class AuthController extends Controller
@@ -19,110 +20,158 @@ class AuthController extends Controller
     /**
      * @param Request $request
      */
-    public function regSignupRoute(Request $request) {
-        if ($request->user()->artists) {
-            return redirect()->route('dashboard/artists',['name' => $request->user()->artists->name]);
+    public function regSignupRoute(Request $request)
+    {
+        /**
+         * Check if user is logged in
+         */
+        if ($request->user()) {
+            if ($request->user()->artists) {
+                Session::put('user', json_decode($request->user()->toJson()));
+                if ($request->user()->artists->name == null) {
+                    Session::put('user', json_decode($request->user()->toJson()));
+                    redirect()->route('setup');
+                }
+                return redirect()->route('dashboard/artists', ['name' => $request->user()->artists->name]);
+            }
         }
+
+        /**
+         * Return signup form
+         */
         return view('signup.signup-reg');
     }
+
+    
     public function regSignup(Request $request)
     {
-        $user = $request->user();
+        /**
+         * Check if User is logged in
+         */
+        if ($request->user()) {
+            if ($request->user()->artists) {
+                Session::put('user', json_decode($request->user()->toJson()));
+                if ($request->user()->artists->name == null) {
+                    Session::put('user', json_decode($request->user()->toJson()));
+                    redirect()->route('setup');
+                }
+                return redirect()->route('dashboard/artists', ['name' => $request->user()->artists->name]);
+            }
+        }
 
-        if (!$request->exists('email') && !$request->exists('name') && !$this->validator($request->email)) {
-            return response()->json([], 400);
+        /**
+         * Validate email and if already exist
+         */
+        if (!$request->exists('email') || !$request->exists('name') || $this->validator($request)) {
+            return response()->json([
+                'message' => 'ERROR: please varify the information'
+            ], 400);
         }
         if ($this->user($request->email)) {
-            return response()->json([], 409);
+            return response()->json([
+                'message' => 'Email already exist'
+            ], 409);
         }
+
+        /**
+         * Prepare user info
+         */
         $this->user = new stdClass;
         $this->user->name = $request->name;
         $this->user->email = strtolower($request->email);
         ProcessRegSignup::dispatch($this->user);
-        return view('signup.reg-response', [
-            'user' => $user,
-            'response' => $this->user
-        ]);
+
+        Session::put('signup', $this->user);
+        return response()->json([]);
+    }
+
+    public function responseSignup()
+    {
+        return view('signup.signup-res');
     }
 
     public function verSignup(Request $request)
     {
+        /**
+         * Verify info to prevent existing email
+         */
         $signup = Signup::find($request->id);
         if ($this->user($signup->email)) {
-            return view('errors.custom', [
-                'code' => 409,
-                'message' => 'Conflict'
-            ]);
+            return redirect()->route('login');
         }
-        return view('signup.signup', [
-            'user' => $signup
-        ]);
+
+        Session::put('signup', $signup);
+        return view('signup.signup');
     }
 
     public function signup(Request $request)
     {
+        /**
+         * Verify info to prevent existing email
+         */
         $signup = Signup::find($request->id);
         if ($this->user($signup->email)) {
-            return view('signup.conflict');
+            return response()->json([
+                'message' => 'Account already exist'
+            ], 409);
         }
 
         if (!$request->exists('password')) {
-            return view('signup.signup', [
-                'user' => $signup
-            ]);
+            return response()->json([
+                'message' => 'password is missing'
+            ], 400);
         }
 
+        // Create new user
         $user = new User([
-            'name' => strtolower($signup->name),
+            'name' => $signup->name,
             'email' => $signup->email,
             'password' => bcrypt($request->password)
         ]);
         $user->save();
-        $user->roles()->sync(1);
-        $data = $this->lazyAuth($user);
 
-        return response()->json(
-            [
-                'user' => $data['user']
-            ],
-            200,
-            [
-                // 'Authorization' => 'Bearer ' . $data['token']
-            ]
-        );
+        //Set roles
+        $user->roles()->sync(1);
+        //Auth user
+        $this->lazyAuth($user);
+
+        return response()->json();
     }
 
-    public function loginRoute() {
+    public function loginRoute()
+    {
         return view('login');
     }
 
     public function login(Request $request)
     {
+        // Auth user
         $data = $this->auth($request);
+        $artist = ($data) ? $data['user']->artists : null;
         if (!$data) {
-            return response()->json([], 401);
+            return response()->json([
+                'message' => 'Invalid email or password'
+            ], 401);
         }
-        if (!$data['user']->artists) {
-            return view('pay.plans');
-        }
+
+        // If user is artist
+        $dashboard = $artist ? route('dashboard/artists', ['name' => $artist->name]) : null;
 
         return response()->json(
             [
                 'user' => $data['user'],
-                'artist' => $data['user']->artists
-            ],
-            200,
-            [
-                // 'Authorization' => 'Bearer '.$data['token']
+                'artist' => $artist,
+                'url' => [
+                    'dashboard' => $dashboard,
+                    'pay' => route('paystack/pay')
+                ]
             ]
         );
     }
 
-    public function logout (Request $request)
+    public function logout(Request $request)
     {
         Auth::logout();
-        return response()->json([
-            'message' => 'logout successful'
-        ]);
+        return redirect()->route('login');
     }
 }

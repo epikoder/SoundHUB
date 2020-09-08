@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MediaQuery;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -8,6 +9,8 @@ use function GuzzleHttp\json_decode;
 
 class CreateArtistsTable extends Migration
 {
+    use MediaQuery;
+
     /**
      * Run the migrations.
      *
@@ -16,17 +19,14 @@ class CreateArtistsTable extends Migration
     public function up()
     {
         Schema::create('artists', function (Blueprint $table) {
-            $social = json_encode([
-                'instagram' => '',
-                'twitter' => ''
-            ]);
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->string('name')->nullable();
-            $table->char('sex')->nullable();
-            $table->string('avatar_url')->default('/img/avatar.png');
-            $table->string('bio')->nullable();
-            $table->json('social')->default($social);
+            $table->mediumText('avatar')->default($this->artistArt());
+            $table->json('social')->default(json_encode([
+                'instagram' => null,
+                'twitter' => null
+            ]));
             $table->tinyInteger('active')->default(1);
             $table->timestamps();
             $table->foreign('user_id')

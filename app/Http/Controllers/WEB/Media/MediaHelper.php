@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers\WEB\Media;
 
-use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -12,12 +11,13 @@ trait MediaHelper
     public function prepare (Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'art' => 'mimes:jpeg,bmp,png',
+            'art' => 'nullable|mimes:jpeg,bmp,png,webp',
             'track' => 'required|max:15360|mimes:audio/mpeg,mpga,opus,oga,flac,webm,weba,wav,ogg,m4a,mp3,mid,amr,aiff,wma,au,acc',
             'title' => 'required|string',
             'genre' => 'required|int',
             'c_genre' => 'nullable|string'
-        ]);
+        ]
+    );
         if ($validation->fails()) {
             return false;
         }
@@ -29,10 +29,10 @@ trait MediaHelper
         $data['artist'] = $data['user']->artists->name;
         $data['genre'] = $request->genre;
         $data['album'] = env('APP_NAME');
-        $data['art'] = '';
+        $data['art'] = null;
 
         if ($request->art) {
-            $data['checkbox'] = $request->write;
+            $data['append_art'] = $request->append_art;
             $data['art'] = $request->file('art');
             $art = Storage::putFileAs('songs/' . $data['artist'].'/images', $data['art'], $data['title'] . '.' .$data['art']->getClientOriginalExtension());
             $data['art'] = $art;
@@ -99,6 +99,7 @@ trait MediaHelper
 
 
         if ($request->art) {
+            $data['append_art'] = $request->append_art;
             $art = $request->file('art');
             $data['art'] = Storage::putFileAs('songs/' . $data['album_artist'] . DIRECTORY_SEPARATOR . $data['title'], $art, 'front_cover' . '.' . $art->getClientOriginalExtension());
         }

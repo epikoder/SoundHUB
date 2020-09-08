@@ -16,12 +16,8 @@ class Plans extends Migration
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->char('code', 50);
         });
-
-        $artist = new App\Plans([
-            'name' => env('PLAN_ARTIST', 'artist')
-        ]);
-        $artist->save();
     }
 
     /**

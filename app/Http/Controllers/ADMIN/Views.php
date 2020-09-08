@@ -3,18 +3,29 @@
 namespace App\Http\Controllers\ADMIN;
 
 use App\Http\Controllers\Controller;
+use App\Models\Artists;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class Views extends Controller
 {
+    public function indexRedirect()
+    {
+        return redirect()->route('login/admin');
+    }
     public function index ()
     {
         return view('Admin.login');
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
+        $users = count(User::all());
+        $artist = count(Artists::all());
+        Session::put('users', $users);
+        Session::put('artists', $artist);
         return view('Admin.dashboard');
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Http\Controllers\MP3File;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,6 +19,8 @@ class ProcessBulkUpload implements ShouldQueue
 
     protected $data = array();
     protected $output = array();
+    protected $art;
+    protected $total_duration = 0;
 
     /**
      * Create a new job instance.
@@ -36,11 +39,22 @@ class ProcessBulkUpload implements ShouldQueue
      */
     public function handle()
     {
+        $def = storage_path('/default.png');
+        $type = pathinfo($def, PATHINFO_EXTENSION);
+        $this->art = 'data:image/' . $type . ';base64,' . base64_encode(file_get_contents($def));
+        if (isset($this->data['art'])) {
+            $image = 'temp/' . Str::random() . '.jpg';
+            Storage::disk('local')->put($image, Storage::get($this->data['art']));
+            $this->art = 'data:image/webp' . ';base64,' . base64_encode(file_get_contents(storage_path('app') . DIRECTORY_SEPARATOR . $image));
+        }
+
         $album = $this->data['user']->albums()->create([
             'title' => $this->data['title'],
             'artist' => $this->data['album_artist'],
             'genre' => $this->data['genre'],
             'track_num' => $this->data['num'],
+            'art' => $this->art,
+            'art_url' => $this->data['art']
         ]);
         $album->save();
 
@@ -87,7 +101,7 @@ class ProcessBulkUpload implements ShouldQueue
                 $this->output['eyeD3'][$a] = $eyeD3->getErrorOutput();
             }
 
-            if (isset($this->data['art'])) {
+            if (isset($this->data['append_art'])) {
                 $image = 'temp/' . $rand . '.img';
                 Storage::disk('local')->put($image, Storage::get($this->data['art']));
                 if (PHP_OS == 'WINNT') {
@@ -121,6 +135,23 @@ class ProcessBulkUpload implements ShouldQueue
                 Storage::disk('local')->delete($image);
             }
 
+            $eyeD3_duration = new Process(
+                [
+                    'python',
+                    'mp3_lenght.py',
+                    storage_path('app') . DIRECTORY_SEPARATOR . $file
+                ],
+                getcwd() . '\app\Console\bin',
+                getenv()
+            );
+            $eyeD3_duration->run();
+            $duration = null;
+            if ($eyeD3_duration->isSuccessful()) {
+                $this->total_duration += trim($eyeD3_duration->getOutput());
+                $duration = substr(MP3File::formatTime(trim($eyeD3_duration->getOutput())) . ' min', 3);
+            }
+
+
             Storage::put($this->data['tracks']->$a->track, Storage::disk('local')->get($file));
             Storage::disk('local')->delete($file);
             $album->tracks()->create([
@@ -128,10 +159,17 @@ class ProcessBulkUpload implements ShouldQueue
                 'artist' => $this->data['tracks']->$a->artist,
                 'album_id' => $album->id,
                 'genre' => $this->data['genre'],
+                'duration' => $duration,
                 'url' => $this->data['tracks']->$a->track,
-                'art' => $this->data['art']
+                'art_url' => $this->data['art'],
+                'art' => $this->art
             ]);
         }
+        if ($this->total_duration) {
+            $album->duration = MP3File::formatTime($this->total_duration).' min';
+            $album->save();
+        }
+
         DB::table('logs')->insert([
             'name' => 'eyeD3',
             'value' => json_encode($this->output)

@@ -46,9 +46,9 @@
                                 <option value=" {{ $artist->id }} ">{{ $artist->name }}</option>
                             @endforeach
                         </select>
-                        <small class="px-2 text-lg">feat : </small>
                         <input type="text" name="feat1"
-                            class="outline-none px-2 border-b-2 input focus:border-green-400">
+                            class="border-b-2 border-gray-700 input focus:border-green-400 outline-none px-2 w-2/4 m-1"
+                            maxlength="80" placeholder="Feat">
                     </div>
                     <div>
                         <input type="checkbox" checked disabled>
@@ -67,9 +67,9 @@
                                 <option value=" {{ $artist->id }} ">{{ $artist->name }}</option>
                             @endforeach
                         </select>
-                        <small class="px-2 text-lg">feat : </small>
                         <input type="text" name="feat2"
-                            class="outline-none px-2 border-b-2 input focus:border-green-400">
+                            class="border-b-2 border-gray-700 input focus:border-green-400 outline-none px-2 w-2/4 m-1"
+                            maxlength="80" placeholder="Feat">
                     </div>
                     <div>
                         <input type="checkbox" checked disabled>
@@ -111,11 +111,12 @@
                                 <option value=" {{ $artist->id }} ">{{ $artist->name }}</option>
                             @endforeach
                         </select>
-                        <small class="px-2 text-lg">feat : </small>
-                        <input type="text" name="feat` + num + `" class="outline-none px-2 border-b-2 input focus:border-green-400">
+                        <input type="text" name="feat` + num + `"
+                                class="border-b-2 border-gray-700 input focus:border-green-400 outline-none px-2 w-2/4 m-1" maxlength="80"
+                                placeholder="Feat">
                     </div>
                     <div>
-                        <input type="checkbox" name="check` + num + `" id="check` + num + `" checked readonly>
+                       <input type="checkbox" name="check` + num + `" id="check` + num + `" checked readonly>
                         <input ` + num + `" type="file" name="track` + num + `" accept="audio/*" class="inline-block" required>
                     </div>
                 </div>`
@@ -131,7 +132,7 @@
     });
 
     function validate() {
-        if ($('input[name=_token]').fieldValue() == "") {
+        if ($('input[name=_token]').fieldValue() == null) {
             return false;
         }
     }
@@ -141,7 +142,6 @@
         $('#submit').removeClass('bg-blue-700');
         $('#submit').prop('disabled', false);
         alert(response.status);
-        location.reload();
     }
 
     function errorcall(error) {
@@ -150,25 +150,29 @@
         alert(response.error);
     }
 
-    $('form').ajaxForm({
-        data: {
-            num: num
-        },
-        beforeSubmit: validate,
-        beforeSend: function() {
-            $('#submit').addClass('bg-blue-700');
-            $('#submit').prop('disabled', true);
-        },
-        uploadProgress: function(event, position, total, percentComplete) {
-            var bar = $('.bar');
-            var percent = $('.percent');
-            var percentVal = percentComplete + '%';
-            bar.width(percentVal);
-            percent.html(percentVal);
-        },
-        success: callback,
-        error: errorcall
-    });
+    $(document).on('submit', 'form', function(e) {
+        e.preventDefault();
+        var nux = num;
+        $('form').ajaxForm({
+            beforeSubmit: validate,
+            data: {
+                num: nux
+            },
+            beforeSend: function() {
+                $('#submit').addClass('bg-blue-700');
+                $('#submit').prop('disabled', true);
+            },
+            uploadProgress: function(event, position, total, percentComplete) {
+                var bar = $('.bar');
+                var percent = $('.percent');
+                var percentVal = percentComplete + '%';
+                bar.width(percentVal);
+                percent.html(percentVal);
+            },
+            success: callback,
+            error: errorcall
+        });
+    })
 
 </script>
 <style>

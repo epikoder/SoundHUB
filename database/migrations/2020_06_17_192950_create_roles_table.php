@@ -1,8 +1,9 @@
 <?php
 
-use App\Roles;
+use App\Models\Roles;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateRolesTable extends Migration
@@ -19,25 +20,18 @@ class CreateRolesTable extends Migration
             $table->string('name')->unique();
         });
 
-        $user = Roles::create([
+        DB::table('roles')->insert([
             'name' => 'user'
         ]);
-        $user->save();
-
-        $artist = Roles::create([
+        DB::table('roles')->insert([
             'name' => 'artist'
         ]);
-        $artist->save();
-
-        $admin = Roles::create([
+        DB::table('roles')->insert([
             'name' => 'admin'
         ]);
-        $admin->save();
-
-        $root = Roles::create([
+        DB::table('roles')->insert([
             'name' => 'root'
         ]);
-        $root->save();
     }
 
     /**

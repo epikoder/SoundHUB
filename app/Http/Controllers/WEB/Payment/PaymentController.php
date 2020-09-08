@@ -5,20 +5,17 @@ namespace App\Http\Controllers\WEB\Payment;
 use App\Http\Controllers\WEB\Auth\AuthFacade;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessPayments;
-use App\Payments;
-use App\Plans;
-use App\User;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Unicodeveloper\Paystack\Facades\Paystack;
 
 
 
 class PaymentController extends Controller
 {
-    use Objectify, AuthFacade, PayFacade;
+    use Objectify,  AuthFacade, PayFacade;
 
-    public function redirectToGateWay()
+    public function redirectToGateWay(Request $request)
     {
         return Paystack::getAuthorizationUrl()->redirectNow();
     }
@@ -26,24 +23,20 @@ class PaymentController extends Controller
     public function handleGatewayCallback()
     {
         $paymentDetails = Paystack::getPaymentData();
-        $paymentDetails = $this->objectify($paymentDetails);
+        $paymentDetails = json_decode(json_encode($paymentDetails));
         if (!$paymentDetails->status || ($paymentDetails->data->status != 'success')) {
-            return response()->json([], 400);
+            // failed
         }
 
         $user = $this->user($paymentDetails->data->customer->email);
         $plan = $this->plan($paymentDetails->data->plan_object);
         if (!$user || !$plan) {
-            dd(!$user, !$plan);
-            return response()->json([], 401);
+            // no user or invalid tranx
         }
-        ProcessPayments::dispatch($paymentDetails->data->reference, $plan, $user);
-        return response()->json();
-    }
+        ProcessPayments::dispatch($paymentDetails->data, $plan, $user);
+        Session::put('user', $user);
+        Session::put('plan', $plan);
 
-    public function pla(Request $request)
-    {
-        $paymentDetails = Payments::find(1);
-        dd(Payments::where('reference', $paymentDetails->reference)->first());
+        return view('pay.success');
     }
 }

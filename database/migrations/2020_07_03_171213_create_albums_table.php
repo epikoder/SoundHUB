@@ -18,9 +18,13 @@ class CreateAlbumsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('title');
             $table->char('artist', 50);
+            $table->mediumText('art');
+            $table->string('art_url')->nullable();
             $table->string('genre');
+            $table->char('duration')->nullable();
             $table->unsignedInteger('track_num');
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
             $table->foreign('user_id')
             ->references('id')
             ->on('users')

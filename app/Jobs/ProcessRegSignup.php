@@ -38,7 +38,7 @@ class ProcessRegSignup implements ShouldQueue
         $signup = new Signup([
             'name' => $this->user->name,
             'email' => $this->user->email,
-            'token' => Str::random(36)
+            'token' => md5(Str::random())
         ]);
         $signup->save();
         Mail::to($this->user)->send(new MailSignup($signup));

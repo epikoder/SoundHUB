@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Payments;
+use App\Models\Payments;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -23,11 +23,11 @@ class ProcessPayments implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($reference, $plan, $user)
+    public function __construct($response, $plan, $user)
     {
         $this->data['plan'] = $plan;
         $this->data['user'] = $user;
-        $this->data['reference'] = $reference;
+        $this->data['response'] = $response;
     }
 
     /**
@@ -35,23 +35,19 @@ class ProcessPayments implements ShouldQueue
      *
      * @return void
      */
-    public function handle ()
+    public function handle()
     {
-        $payment = Payments::where('reference', $this->data['reference'])->first();
-        DB::table('process_log')->insert([
-            'log' => json_encode($payment)
+        $this->data['user']->plans()->sync($this->data['plan']->id, [
+            'reference' => $this->data['response']->response,
+            'response' => $this->data['response']->message,
+            'expires_at' => Carbon::now()->addDays($this->data['plan']->days)
         ]);
-        
-        if (!$payment) {
-            $this->data['user']->plans()->attach($this->data['plan']->id, [
-                'reference' => $this->data['reference'],
-                'expires_at' => Carbon::now()->addYear()
-            ]);
-        }
 
         $artist = $this->data['user']->artist;
         if (!$artist) {
-            $this->data['user']->artists()->create();
+            $artist = $this->data['user']->artists()->create();
         }
+        $artist->active = 1;
+        $artist->save();
     }
 }

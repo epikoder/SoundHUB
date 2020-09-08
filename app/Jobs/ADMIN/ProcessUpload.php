@@ -2,6 +2,7 @@
 
 namespace App\Jobs\ADMIN;
 
+use App\Http\Controllers\MP3File;
 use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,6 +19,8 @@ class ProcessUpload implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $data = array();
+    protected $output = array();
+    protected $art;
 
     /**
      * Create a new job instance.
@@ -38,6 +41,7 @@ class ProcessUpload implements ShouldQueue
     {
         $rand = Str::random();
         $file = 'temp/'.$rand.'.mp3';
+        $def = storage_path('/default.png');
         Storage::disk('local')->put($file, Storage::get($this->data['track']));
         if (PHP_OS == 'WINNT') {
             $eyeD3 = new Process(
@@ -72,38 +76,59 @@ class ProcessUpload implements ShouldQueue
         if (!$eyeD3->isSuccessful()) {
             $this->output['eyeD3'] = $eyeD3->getErrorOutput();
         }
+        $type = pathinfo($def, PATHINFO_EXTENSION);
+        $this->art = 'data:image/' . $type . ';base64,' . base64_encode(file_get_contents($def));
 
         if (isset($this->data['art'])) {
-            $image = 'temp/'.$rand.'.img';
+            $image = 'temp/' . $rand . '.jpg';
             Storage::disk('local')->put($image, Storage::get($this->data['art']));
-            if (PHP_OS == 'WINNT') {
-                $eyeD3_image = new Process(
-                    [
-                        'eyeD3',
-                        '--add-image',
-                        str_replace('C:', 'C\:', storage_path('app') . DIRECTORY_SEPARATOR . $image) . ':FRONT_COVER',
-                        storage_path('app') . DIRECTORY_SEPARATOR . $file
-                    ],
-                    getcwd() . '\app\Console\bin',
-                    getenv()
-                );
-            } else {
-                $eyeD3_image = new Process(
-                    [
-                        'eyeD3',
-                        '--add-image',
-                        storage_path('app') . DIRECTORY_SEPARATOR . $image . ':FRONT_COVER',
-                        storage_path('app') . DIRECTORY_SEPARATOR . $file
-                    ],
-                    getcwd() . '/app/Console/usr/bin',
-                    getenv()
-                );
-            }
-            $eyeD3_image->run();
-            if (!$eyeD3_image->isSuccessful()) {
-                $this->output['eyeD3_image'] = $eyeD3_image->getErrorOutput();
+            $type = pathinfo(storage_path('app') . DIRECTORY_SEPARATOR . $image, PATHINFO_EXTENSION);
+            $this->art = 'data:image/' . $type . ';base64,' . base64_encode(file_get_contents(storage_path('app') . DIRECTORY_SEPARATOR . $image));
+
+            if (isset($this->data['append_art'])) {
+                if (PHP_OS == 'WINNT') {
+                    $eyeD3_image = new Process(
+                        [
+                            'eyeD3',
+                            '--add-image',
+                            str_replace('C:', 'C\:', storage_path('app') . DIRECTORY_SEPARATOR . $image) . ':FRONT_COVER',
+                            storage_path('app') . DIRECTORY_SEPARATOR . $file
+                        ],
+                        getcwd() . '\app\Console\bin',
+                        getenv()
+                    );
+                } else {
+                    $eyeD3_image = new Process(
+                        [
+                            'eyeD3',
+                            '--add-image',
+                            storage_path('app') . DIRECTORY_SEPARATOR . $image . ':FRONT_COVER',
+                            storage_path('app') . DIRECTORY_SEPARATOR . $file
+                        ],
+                        getcwd() . '/app/Console/usr/bin',
+                        getenv()
+                    );
+                }
+                $eyeD3_image->run();
+                if (!$eyeD3_image->isSuccessful()) {
+                    $this->output['eyeD3_image'] = $eyeD3_image->getErrorOutput();
+                }
             }
             Storage::disk('local')->delete($image);
+        }
+        $eyeD3_duration = new Process(
+            [
+                'python',
+                'mp3_lenght.py',
+                storage_path('app') . DIRECTORY_SEPARATOR . $file
+            ],
+            getcwd() . '\app\Console\bin',
+            getenv()
+        );
+        $eyeD3_duration->run();
+        $duration = null;
+        if ($eyeD3_duration->isSuccessful()) {
+            $duration = substr(MP3File::formatTime(trim($eyeD3_duration->getOutput())) . ' min', 3);
         }
 
         Storage::put($this->data['track'], Storage::disk('local')->get($file));
@@ -115,9 +140,11 @@ class ProcessUpload implements ShouldQueue
             'title' => $this->data['title'].$this->data['feat'],
             'artist' => $this->data['artist'],
             'genre' => $this->data['genre'],
+            'duration' => $duration,
             'url' => $this->data['track'],
-            'art' => $this->data['art'],
-            'admin' => $this->data['admin']
+            'art' => $this->art,
+            'art_url' => $this->data['art'],
+            'admin' => $this->data['admin'],
         ]);
 
         DB::table('logs')->insert([
