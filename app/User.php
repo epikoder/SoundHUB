@@ -42,6 +42,11 @@ class User extends Authenticatable
         return $this->hasOne(Models\Artists::class);
     }
 
+    public function eliteArtist()
+    {
+        return $this->hasOne(Models\EliteArtists::class);
+    }
+
     public function tracks()
     {
         return $this->morphMany(Models\Tracks::class, 'trackable');

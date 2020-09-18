@@ -11,4 +11,9 @@ class EliteArtists extends Model
     protected $fillable = [
         'name', 'avatar', 'social'
     ];
+
+    public function users ()
+    {
+        return $this->belongsTo(\App\User::class);
+    }
 }
