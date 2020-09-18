@@ -19,8 +19,8 @@ class ProcessBulkUpload implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $data = array();
-    protected $output = array();
     protected $art;
+    protected $album;
     protected $total_duration = 0;
 
     /**
@@ -51,16 +51,19 @@ class ProcessBulkUpload implements ShouldQueue
         }
 
         /// USER SOUNDHUB
-        $user = User::find(1);
+        $user = User::where('name', $this->data['artist'])->first();
         $album = $user->albums()->create([
             'title' => $this->data['title'],
-            'artist' => $this->data['album_artist'],
+            'slug' => $this->data['slug'],
+            'artist' => $this->data['artist'],
             'genre' => $this->data['genre'],
+            'admin' => $this->data['admin'],
             'track_num' => $this->data['num'],
             'art' => $this->art,
             'art_url' => $this->data['art']
         ]);
         $album->save();
+        $this->album = $album;
 
         for ($a = 1; $a <= $this->data['num']; $a++) {
             $rand = Str::random();
@@ -73,7 +76,7 @@ class ProcessBulkUpload implements ShouldQueue
                         'eyeD3',
                         '-t', $this->data['tracks']->$a->title,
                         '-a', $this->data['tracks']->$a->artist,
-                        '-b', $this->data['album_artist'],
+                        '-b', $this->data['artist'],
                         '-n', $a,
                         '-A', $this->data['title'],
                         '-G', $this->data['genre'],
@@ -89,7 +92,7 @@ class ProcessBulkUpload implements ShouldQueue
                         'eyeD3',
                         '-t', $this->data['tracks']->$a->title,
                         '-a', $this->data['tracks']->$a->artist,
-                        '-b', $this->data['album_artist'],
+                        '-b', $this->data['artist'],
                         '-n', $a,
                         '-A', $this->data['title'],
                         '-G', $this->data['genre'],
@@ -101,9 +104,6 @@ class ProcessBulkUpload implements ShouldQueue
                 );
             }
             $eyeD3->run();
-            if (!$eyeD3->isSuccessful()) {
-                $this->output['eyeD3'][$a] = $eyeD3->getErrorOutput();
-            }
 
 
             if (isset($this->data['append_art'])) {
@@ -134,9 +134,6 @@ class ProcessBulkUpload implements ShouldQueue
                 }
 
                 $eyeD3_image->run();
-                if (!$eyeD3_image->isSuccessful()) {
-                    $this->output['eyeD3_image'][$a] = $eyeD3_image->getErrorOutput();
-                }
                 Storage::disk('local')->delete($image);
             }
 
@@ -160,6 +157,7 @@ class ProcessBulkUpload implements ShouldQueue
             Storage::disk('local')->delete($file);
             $album->tracks()->create([
                 'title' => $this->data['tracks']->$a->title . $this->data['tracks']->$a->feat,
+                'slug' => $this->data['tracks']->$a->slug,
                 'artist' => $this->data['tracks']->$a->artist,
                 'album_id' => $album->id,
                 'genre' => $this->data['genre'],
@@ -175,10 +173,16 @@ class ProcessBulkUpload implements ShouldQueue
             $album->duration = MP3File::formatTime($this->total_duration). ' min';
             $album->save();
         }
+    }
 
-        DB::table('logs')->insert([
-            'name' => 'eyeD3',
-            'value' => json_encode($this->output)
-        ]);
+    /**
+     * On job failed
+     */
+    public function failed()
+    {
+        for ($a = 1; $a <= $this->data['num']; $a++) {
+            Storage::delete($this->data['tracks']->$a->track);
+        }
+        $this->album->delete();
     }
 }

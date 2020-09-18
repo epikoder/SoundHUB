@@ -8,7 +8,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Str;
@@ -18,7 +17,6 @@ class ProcessUpload implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $data = array();
-    protected $output = array();
     protected $art;
 
     /**
@@ -72,9 +70,6 @@ class ProcessUpload implements ShouldQueue
             );
         }
         $eyeD3->run();
-        if (!$eyeD3->isSuccessful()) {
-            $this->output['eyeD3'] = $eyeD3->getErrorOutput();
-        }
 
         $this->art = 'data:image/webp' . ';base64,' . base64_encode(file_get_contents($def));
 
@@ -109,9 +104,6 @@ class ProcessUpload implements ShouldQueue
                     );
                 }
                 $eyeD3_image->run();
-                if (!$eyeD3_image->isSuccessful()) {
-                    $this->output['eyeD3_image'] = $eyeD3_image->getErrorOutput();
-                }
             }
             Storage::disk('local')->delete($image);
         }
@@ -134,6 +126,7 @@ class ProcessUpload implements ShouldQueue
         Storage::disk('local')->delete($file);
         $track = $this->data['user']->tracks()->create([
             'title' => $this->data['title'],
+            'slug' => $this->data['slug'],
             'artist' => $this->data['artist'],
             'album' => $this->data['album'],
             'genre' => $this->data['genre'],
@@ -143,10 +136,13 @@ class ProcessUpload implements ShouldQueue
             'art_url' => $this->data['art']
         ]);
         $track->save();
-
-        DB::table('logs')->insert([
-            'name' => 'eyeD3',
-            'value' => json_encode($this->output)
-        ]);
+    }
+    
+    /**
+     * On job failed
+     */
+    public function failed()
+    {
+        Storage::delete($this->data['track']);
     }
 }

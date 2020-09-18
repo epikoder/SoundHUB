@@ -5,24 +5,38 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use illuminate\Support\Str;
 
 trait MediaHelper
 {
+    /**
+     * Set the variables for job
+     *
+     * @see \App\Jobs\ProcessUpload
+     */
     public function prepare (Request $request)
     {
+        /**
+         * Validate data
+         */
         $validation = Validator::make($request->all(), [
-            'art' => 'nullable|mimes:jpeg,bmp,png,webp',
+            'art' => 'max:1024|nullable|mimes:jpeg,bmp,png,webp',
             'track' => 'required|max:15360|mimes:audio/mpeg,mpga,opus,oga,flac,webm,weba,wav,ogg,m4a,mp3,mid,amr,aiff,wma,au,acc',
             'title' => 'required|string',
             'genre' => 'required|int',
             'c_genre' => 'nullable|string'
         ]
-    );
+        );
+
         if ($validation->fails()) {
             return false;
         }
 
+        /**
+         * Prepare data on validation success
+         */
         $data['title'] = $request->title;
+        $data['slug'] = Str::slug($request->title);
         $data['track'] = $request->file('track');
         $data['ext'] = $data['track']->getClientOriginalExtension();
         $data['user'] = $request->user();
@@ -31,6 +45,7 @@ trait MediaHelper
         $data['album'] = env('APP_NAME');
         $data['art'] = null;
 
+        /** If art is uploaded add art to storage and check if art should be appended */
         if ($request->art) {
             $data['append_art'] = $request->append_art;
             $data['art'] = $request->file('art');
@@ -42,24 +57,24 @@ trait MediaHelper
     }
 
     /**
-     * Requires :
-     * user, feat, art, genre, title, track_title
+     * Set the variables for job
      *
-     * @return mixed
+     * @see \App\Jobs\ProcessBulkUpload
      */
     public function prepareBulk (Request $request)
     {
+        /** Validation */
         $validation = Validator::make($request->all(), [
-            'art' => 'nullable|mimes:jpeg,bmp,png',
+            'art' => 'max:1024|nullable|mimes:jpeg,bmp,png',
             'title' => 'required|string',
             'num' => 'required|int'
         ]);
-        if ($validation->fails() || ($request->num > 24)) {
-            return false;
+        if ($validation->fails()) {
+            return 'Error: Album information';
         }
 
-        $data['album_artist'] = $request->user()->artists->name;
-        //// TRACKS /////
+        $data['artist'] = $request->user()->artists->name;
+        //// VALIDATE AND ADDD EACH TRACK TO VARIABLE /////
         $tracks = json_decode('{}');
         for ($x = 1; $x <= $request->num; $x++) {
             if ($request->exists('check' . $x)) {
@@ -70,7 +85,7 @@ trait MediaHelper
                 ]);
 
                 if ($validation->fails()) {
-                    return false;
+                    return 'Error: Failed to validate track '. $x;
                 }
 
                 $title = 'title' . $x;
@@ -79,7 +94,8 @@ trait MediaHelper
 
                 $var->track = $request->$track;
                 $var->title = $request->$title;
-                $var->artist = $data['album_artist'];
+                $var->slug = Str::slug($request->$title);
+                $var->artist = $data['artist'];
                 $var->feat = null;
 
                 $feat = 'feat' . $x;
@@ -95,17 +111,18 @@ trait MediaHelper
         $data['user'] = $request->user();
         $data['art'] = null;
         $data['title'] = $request->title;
+        $data['slug'] = Str::slug($request->title);
         $data['genre'] = $this->genre($request->genre, $request->c_genre);
 
 
         if ($request->art) {
             $data['append_art'] = $request->append_art;
             $art = $request->file('art');
-            $data['art'] = Storage::putFileAs('songs/' . $data['album_artist'] . DIRECTORY_SEPARATOR . $data['title'], $art, 'front_cover' . '.' . $art->getClientOriginalExtension());
+            $data['art'] = Storage::putFileAs('songs/' . $data['artist'] . DIRECTORY_SEPARATOR . $data['title'], $art, 'front_cover' . '.' . $art->getClientOriginalExtension());
         }
 
         for ($a = 1; $a <= $x; $a++) {
-            $tracks->$a->track = Storage::putFileAs('songs/' . $data['album_artist'] . DIRECTORY_SEPARATOR . $data['title'], $tracks->$a->track, $tracks->$a->title . '.' . $tracks->$a->track->getClientOriginalExtension());
+            $tracks->$a->track = Storage::putFileAs('songs/' . $data['artist'] . DIRECTORY_SEPARATOR . $data['title'], $tracks->$a->track, $tracks->$a->title . '.' . $tracks->$a->track->getClientOriginalExtension());
         }
 
         $data['tracks'] = $tracks;

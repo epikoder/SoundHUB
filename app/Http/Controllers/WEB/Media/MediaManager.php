@@ -11,16 +11,13 @@ class MediaManager extends Controller
 {
     use MediaHelper;
 
-    protected $data = array();
-    protected $output = array();
-
     public function upload(Request $request)
     {
         $data = $this->prepare($request);
         if (!$data) {
             $user = $request->user();
             return response()->json([
-                'message' => 'Error: cross check form and try again'
+                'message' => 'Error: Validation failed, try again'
             ], 400);
         }
         ProcessUpload::dispatch($data);
@@ -30,9 +27,9 @@ class MediaManager extends Controller
     public function bulkUpload(Request $request)
     {
         $data = $this->prepareBulk($request);
-        if (!$data) {
+        if (is_string($data)) {
             return response()->json([
-                'message' => 'not successful'
+                'message' => $data
             ]);
         }
 

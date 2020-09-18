@@ -16,29 +16,26 @@ class MediaManager extends Controller
 {
     use Media;
 
-
-    protected $output = array();
-
     public function upload (Request $request)
     {
         $data = $this->save($request);
         if (!$data) {
             return view('Admin.media', [
-                'error' => 'not successful'
+                'message' => 'Error: Validation failed, try again'
             ]);
         }
         ProcessUpload::dispatch($data);
         return view('Admin.media',[
-            'status' => 'upload successful'
+            'message' => 'upload successful'
         ]);
     }
 
     public function bulkUpload(Request $request)
     {
         $data = $this->saveBulk($request);
-        if (!$data) {
+        if (is_string($data)) {
             return response()->json([
-                'error' => 'not successful'
+                'message' => $data
             ]);
         }
 

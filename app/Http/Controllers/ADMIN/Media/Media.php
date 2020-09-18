@@ -6,14 +6,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+
 trait Media
 {
-
     public function save(Request $request)
     {
         $validation = Validator::make($request->all(), [
             'artist' => 'required|int',
-            'art' => 'mimes:jpeg,bmp,png',
+            'art' => 'max:1024|mimes:jpeg,bmp,png',
             'track' => 'required|max:15360|mimes:audio/mpeg,mpga,opus,oga,flac,webm,weba,wav,ogg,m4a,mp3,mid,amr,aiff,wma,au,acc',
             'title' => 'required|string'
         ]);
@@ -27,6 +28,7 @@ trait Media
         }
         $data['track'] = $request->file('track');
         $data['title'] = $request->title;
+        $data['slug'] = Str::slug($request->title);
         $data['artist'] = $this->artist($request->artist);
         $data['genre'] = $this->genre($request->genre, $request->c_genre);
         $data['admin'] = $request->user()->admins->uuid;
@@ -49,8 +51,8 @@ trait Media
             'title' => 'required|string',
             'num' => 'required|int'
         ]);
-        if ($validation->fails() || ($request->num > 24)) {
-            return false;
+        if ($validation->fails() || !$this->artist($request->artist)) {
+            return 'Error: Album information';
         }
         //// TRACKS /////
         $tracks = json_decode('{}');
@@ -63,7 +65,7 @@ trait Media
                     'title' . $x => 'required|string'
                 ]);
                 if ($validation->fails()) {
-                    return false;
+                    return 'Error: Failed to validate track ' . $x;
                 }
                 $title = 'title'.$x;
                 $artist = 'artist'.$x;
@@ -72,6 +74,7 @@ trait Media
                 $var->artist = $this->artist($request->$artist);
                 $var->track = $request->$track;
                 $var->title = $request->$title;
+                $var->slug = Str::slug($request->$title);
                 $var->feat = null;
 
                 $feat = 'feat'.$x;
@@ -83,19 +86,20 @@ trait Media
             }
         }
 
-        $data['album_artist'] = $this->artist($request->artist);
+        $data['artist'] = $this->artist($request->artist);
         $data['art'] = null;
         $data['title'] = $request->title;
+        $data['slug'] = Str::slug($request->title);
         $data['genre'] = $this->genre($request->genre, $request->c_genre);
         $data['admin'] = $request->user()->admins->uuid;
         if ($request->art) {
             $data['append_art'] = $request->append_art;
             $art = $request->file('art');
-            $data['art'] = Storage::putFileAs('songs/' . $data['album_artist'].DIRECTORY_SEPARATOR.$data['title'], $art, 'front_cover'. '.' . $art->getClientOriginalExtension());
+            $data['art'] = Storage::putFileAs('songs/' . $data['artist'].DIRECTORY_SEPARATOR.$data['title'], $art, 'front_cover'. '.' . $art->getClientOriginalExtension());
         }
         --$x;
         for ($a = 1; $a <= $x; $a++) {
-            $tracks->$a->track = Storage::putFileAs('songs/' . $data['album_artist'].DIRECTORY_SEPARATOR.$data['title'], $tracks->$a->track, $tracks->$a->title . '.' . $tracks->$a->track->getClientOriginalExtension());
+            $tracks->$a->track = Storage::putFileAs('songs/' . $data['artist'].DIRECTORY_SEPARATOR.$data['title'], $tracks->$a->track, $tracks->$a->title . '.' . $tracks->$a->track->getClientOriginalExtension());
         }
         $data['tracks'] = $tracks;
         $data['num'] = $x;
@@ -104,7 +108,7 @@ trait Media
 
     public function artist(int $artist)
     {
-        return (DB::table('elite_artist')->find($artist))->name;
+        return DB::table('elite_artist')->find($artist) ? (DB::table('elite_artist')->find($artist))->name : false;
     }
 
     public function genre(int $genre = null, string $c_genre = null)
