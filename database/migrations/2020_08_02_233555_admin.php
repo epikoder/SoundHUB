@@ -2,7 +2,9 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class Admin extends Migration
 {
@@ -22,6 +24,21 @@ class Admin extends Migration
             ->on('users')
             ->onDelete('cascade');
         });
+
+        if (!\App\User::where('email', Config::get('constants.admin.email'))->first()) {
+            $user = new \App\User(
+                [
+                    'name' => Config::get('constants.admin.name', 'admin'),
+                    'email' => Config::get('constants.admin.email', 'efedua.bell@gmail.com'),
+                    'password' => bcrypt(Config::get('constants.admin.password', 'password'))
+                ]
+            );
+            $user->save();
+            $user->admins()->create([
+                'uuid' => (string) Str::uuid()
+            ]);
+            $user->roles()->attach([3, 4]);
+        }
     }
 
     /**
