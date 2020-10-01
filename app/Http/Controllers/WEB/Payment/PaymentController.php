@@ -13,7 +13,7 @@ use Unicodeveloper\Paystack\Facades\Paystack;
 
 class PaymentController extends Controller
 {
-    use Objectify,  AuthFacade, PayFacade;
+    use AuthFacade, PayFacade;
 
     public function redirectToGateWay(Request $request)
     {

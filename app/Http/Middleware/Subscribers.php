@@ -22,7 +22,7 @@ class Subscribers
             return redirect()->route('signup/reg');
         }
         if ($user->artists->active != 1 || $user->active != 1) {
-            return redirect()->route('support/suspended');
+            return response('suspended');//redirect()->route('support/suspended');
         }
         if ($user->artists->name == null) {
             return redirect()->route('setup');
