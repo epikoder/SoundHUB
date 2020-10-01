@@ -20,7 +20,7 @@
     </header>
 
     <main>
-        <div class="sm:mt-20 md:mt-20 lg:mt-16 xl:mt-16 h-f">
+        <div class="mt-20 h-f">
             @yield('content')
         </div>
     </main>
