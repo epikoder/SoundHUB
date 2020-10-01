@@ -1,18 +1,19 @@
 import $ from "jquery";
 import ajaxForm from "jquery-form";
-window.$ = $
-var a = 0;
-var b = 0;
-var c = 0;
-var d = 0;
-var e = 0;
-$(document).ready(function() {
+import { toast } from "../app";
+
+let a = 0;
+let b = 0;
+let c = 0;
+let d = 0;
+let e = 0;
+$(function() {
     $("#profileI").hide();
     $("#mediaI").hide();
     $("#promoI").hide();
     $("#metricsI").hide();
     $("#settingsI").hide();
-    $('.menu').show();
+    $(".menu").show();
     /*
     if (no_handle) {
         alert("You don't have a social handle configured! :\\");
@@ -43,7 +44,7 @@ $("#settings").on("click", function() {
     se();
 });
 
-$('.logout').on('click', function () {
+$(".logout").on("click", function() {
     $(
         `<div class="pop fixed absolute flex background w-full h-full top-0">
             <div class="m-auto mt-2/5 p-4 bg-gray-300 text-black font-mono">
@@ -52,16 +53,18 @@ $('.logout').on('click', function () {
                     <button class="close my-2 input-bg text-black border-black border rounded-full p hover:text-white hover:bg-black">
                         No
                     </button>
-                    <a href="`+logout+`" class="my-2 input-bg text-black border-black border rounded-full p hover:text-white hover:bg-black">
+                    <a href="` +
+            logout +
+            `" class="my-2 input-bg text-black border-black border rounded-full p hover:text-white hover:bg-black">
                         Yes
                     </a>
                 </div>
             </div>
         </div>`
     ).appendTo(document.body);
-})
-$(document.body).on('click', '.close', function () {
-    $('.pop').remove();
+});
+$(document.body).on("click", ".close", function() {
+    $(".pop").remove();
 });
 
 function pr() {
@@ -121,17 +124,16 @@ function se() {
 
 $("form").ajaxForm({
     beforeSubmit: function() {
-        window.NP.start();
+        NP.start();
     },
     success: function() {
-        window.NP.done();
-        alert("");
+        NP.done();
         $(".es").hide();
         location.reload();
     },
     error: function(response) {
         console.log(response);
-        alert("An error occured");
-        window.NP.done();
+        toast("An error occured");
+        NP.done();
     }
 });

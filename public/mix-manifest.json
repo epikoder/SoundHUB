@@ -4,11 +4,14 @@
     "/css/app.css": "/css/app.css",
     "/css/tailwind.css": "/css/tailwind.css",
     "/css/admin.css": "/css/admin.css",
+    "/js/app/allArtists.js": "/js/app/allArtists.js",
     "/js/app/bulk.js": "/js/app/bulk.js",
     "/js/app/dashboard.js": "/js/app/dashboard.js",
     "/js/app/login.js": "/js/app/login.js",
     "/js/app/regs.js": "/js/app/regs.js",
     "/js/app/setup.js": "/js/app/setup.js",
     "/js/app/signup.js": "/js/app/signup.js",
-    "/js/app/upload.js": "/js/app/upload.js"
+    "/js/app/upload.js": "/js/app/upload.js",
+    "/js/player.js": "/js/player.js",
+    "/js/search.js": "/js/search.js"
 }

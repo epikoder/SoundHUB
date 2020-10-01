@@ -1,8 +1,6 @@
 @extends('layouts.app')
 @section('title', '| signup')
-
 @section('content')
-    @javascript('route', route('signup/res'))
     <div class="w-full flex">
         <div class="sm:w-5/6 md:w-5/6 lg:w-2/6 xl:w-2/6 m-auto mt-24 px-12 py-8 border-2 rounded-md frame">
             <div class="info my-2 p-4">
@@ -32,7 +30,8 @@
             </form>
         </div>
     </div>
-    @push('head')
-        <script type="module" src=" {{ asset('js/app/regs.js') }} "></script>
-    @endpush
 @endsection
+@push('head')
+    <script type="module" src=" {{ asset('js/app/regs.js') }} "></script>
+    @javascript('route', route('signup/res'))
+@endpush

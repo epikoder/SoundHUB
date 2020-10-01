@@ -14,7 +14,7 @@
                             Title<span class="text-red-700">*</span>
                         </label>
                         <input type="text" name="title" class="title w-full px-2 focus:outline-none"
-                            placeholder={{ env('APP_NAME') }} required>
+                            placeholder={{ Config::get('app.name') }} required>
                     </div>
                     <div class="flex my-1">
                         <div class="ml-auto border input-group input-bg hover:border-teal-500 rounded">

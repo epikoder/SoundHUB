@@ -1,8 +1,6 @@
 @extends('layouts.app')
 @section('title', '| signup')
-
 @section('content')
-    @javascript('route', route('plans'))
     @php
     $signup = Session::get('signup')
     @endphp
@@ -36,5 +34,9 @@
             </div>
         </div>
     </div>
-    <script type="module" src={{ asset('js/signup.js') }}></script>
 @endsection
+
+@push('head')
+@javascript('login', route('getLogin'))
+<script type="module" src={{ asset('js/signup.js') }}></script>
+@endpush

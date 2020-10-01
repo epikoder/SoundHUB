@@ -1,9 +1,9 @@
-require('./bootstrap');
+require("./bootstrap");
 import Cookies from "js-cookie";
-import $ from 'jquery';
-import NP from 'nprogress';
+import $ from "jquery";
+import NP from "nprogress";
 
-window.NP = NP;
+window[NP] = NP;
 NP.start();
 function sc(a = {}, n = "SoundHUB", l = 14) {
     Cookies.set(n, JSON.stringify(a), { expires: l, path: "/" });
@@ -11,7 +11,7 @@ function sc(a = {}, n = "SoundHUB", l = 14) {
 }
 
 function gc(n = "SoundHUB") {
-    var c = Cookies.get(n);
+    let c = Cookies.get(n);
     if (!c) {
         return c;
     }
@@ -19,7 +19,7 @@ function gc(n = "SoundHUB") {
 }
 
 function boot() {
-    var c = gc() ? gc() : sc();
+    let c = gc() ? gc() : sc();
     return c;
 }
 
@@ -27,14 +27,14 @@ function hide(x) {
     return $(x).hide();
 }
 
-$(document).ready(function () {
+$(function() {
     NP.done();
-})
+});
 /**Home */
-var c = boot();
+let c = boot();
 setup();
 
-$(".switch").on("click", function() {
+$(".switch-btn").on("click", function() {
     if (c.switch == 0) {
         $(".switch").removeClass("night");
         $(".switch").addClass("day");
@@ -70,4 +70,65 @@ function setup() {
         return;
     }
 }
-export { sc, gc, hide, boot};
+
+function toast(text = null, duration = 3000, close = true) {
+    let body = $("body").get([0]);
+    if (close) {
+        var closeToast = `<div>
+            <span class="pl-4 pr-2 text-sm closeToast">X</span>
+        </div>`;
+    }
+    if (duration) {
+        var bar = `<div class="toastBar h-1 bg-blue-500">
+        </div>`;
+    }
+    let toast =
+        `<div class="toast">
+        <div class="p-2 flex justify-between">
+            <div class"px-2">
+            ` +
+        text +
+        `
+            </div>
+            ` +
+        closeToast +
+        `
+        </div>
+        ` +
+        bar +
+        `
+    </div>`;
+
+    body.innerHTML += toast;
+    if ($(".toast").get([0]) && $(".toastClose").get([0])) {
+        $(".closeToast").on("click", function() {
+            $(".toast").remove();
+        });
+    } else if (duration) {
+        durationHandler(duration);
+    } else {
+        $(document).on("click", function() {
+            $(".toast").remove();
+        });
+    }
+}
+
+async function durationHandler(duration) {
+    let bar = $(".toastBar");
+    let barPercent = 100;
+    let durationLeft;
+    let x = 1;
+    let timeout = 50;
+    bar.width(barPercent + "%");
+    const interval = setInterval(() => {
+        durationLeft = duration - timeout * x++;
+        barPercent = (durationLeft / duration) * 100;
+        if (durationLeft <= 0) {
+            $(".toast").remove();
+            clearInterval(interval);
+        }
+        bar.width(barPercent + "%");
+    }, timeout);
+}
+
+export { sc, gc, hide, boot, toast };

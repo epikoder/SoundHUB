@@ -1,16 +1,16 @@
-import $ from 'jquery';
-import ajaxForm from 'jquery-form';
+import $ from "jquery";
+import ajaxForm from "jquery-form";
 
-var _return = false;
+let _return = false;
 
-$('.password').on('keyup', function () {
-    vi('.password', '.div-p');
+$(".password").on("keyup", function() {
+    vi(".password", ".div-p");
 });
 
-$('.c-password').on('keyup', function () {
-    var p = $('.password').val();
-    var cp = $('.c-password').val();
-    var d = '.div-cp';
+$(".c-password").on("keyup", function() {
+    let p = $(".password").val();
+    let cp = $(".c-password").val();
+    let d = ".div-cp";
     if (p != cp) {
         $(d).addClass("border-red-300");
         $(d).removeClass("hover:border-green-300");
@@ -23,7 +23,7 @@ $('.c-password').on('keyup', function () {
 });
 function vi(i, d) {
     i = $(i).val();
-    if (i.length <= 5 || i.indexOf(" ") > -1) {
+    if (i.length <= 7 || i.indexOf(" ") > -1) {
         $(d).addClass("border-red-300");
         $(d).removeClass("hover:border-green-300");
         _return = false;
@@ -37,18 +37,18 @@ function validate() {
     if (!_return) {
         return _return;
     }
-    window.NP.start();
+    NP.start();
 }
 function callback() {
-    window.NP.done();
-    location.replace(route);
+    NP.done();
+    location.replace(login);
 }
 function errrorcall(error) {
     alert(error.responseJSON.message);
-    window.NP.done();
+    NP.done();
 }
 
-$('#signup').ajaxForm({
+$("#signup").ajaxForm({
     beforeSend: validate,
     success: callback,
     error: errrorcall

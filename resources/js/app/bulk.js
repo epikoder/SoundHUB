@@ -1,30 +1,32 @@
 import $ from "jquery";
-import ajaxForm from 'jquery-form';
+import ajaxForm from "jquery-form";
 import selectize from "selectize";
+import { toast } from '../app';
 
 /** Custom select */
-var x;
-var labelVal;
-$('.tracks').on('change','.inputfile', function (e) {
-    var label = this.nextElementSibling;
+let x;
+let labelVal;
+$(".tracks").on("change", ".inputfile", function(e) {
+    let label = this.nextElementSibling;
     if (!x) {
         x = 1;
         labelVal = label.innerHTML;
     }
-    var name = null;
+    let name = null;
     name = e.target.value.split("\\").pop();
     if (name) {
         return (label.innerHTML = name);
     } else {
         label.innerHTML = labelVal;
     }
-})
+});
 
 /** Counter */
-var num = 2;
+let num = 2;
 $(".add").on("click", function() {
     ++num;
-    $(`<div class="py-2 t` +
+    $(
+        `<div class="py-2 t` +
             num +
             `">
                     <div class="py-2">
@@ -32,7 +34,9 @@ $(".add").on("click", function() {
             num +
             `" class="border-b-2 input focus:border-green-400 outline-none px-2 w-2/4 m-1" maxlength="80" required><br>
                         Artist :
-                        <input class="w-2/4 p-1 rounded border-2 border-gray-400" type="text" value="`+artist+`" disabled>
+                        <input class="w-2/4 p-1 rounded border-2 border-gray-400" type="text" value="` +
+            artist +
+            `" disabled>
                         <input type="text" name="feat` +
             num +
             `"
@@ -56,11 +60,12 @@ $(".add").on("click", function() {
             `"
                 class="input-bg text-black border-black border rounded-md mx-2 px-2 py-1 hover:text-white hover:bg-black">
                     Choose file...
-            </label>`).appendTo('.tracks');
+            </label>`
+    ).appendTo(".tracks");
 });
 
 $(".remove").on("click", function() {
-    for (var i = 3; i <= num; i++) {
+    for (let i = 3; i <= num; i++) {
         if (!$("#check" + i).is(":checked")) {
             $(".t" + i).remove();
         }
@@ -77,28 +82,28 @@ function enableSubmit() {
     $(".submit").removeClass("bg-black");
     $(".submit").removeClass("text-white");
     $(".submit").prop("disabled", false);
-    var bar = $(".bar");
-    var percent = $(".percent");
-    var percentVal = "0%";
+    let bar = $(".bar");
+    let percent = $(".percent");
+    let percentVal = "0%";
     bar.width(percentVal);
     percent.html(percentVal);
 }
 
 function callback(response) {
     enableSubmit();
-    alert(response.message);
+    toast(response.message, 3000);
 }
 
 function errorcall(error) {
     enableSubmit();
     if (response.message) {
-        alert(response.message);
-    } else alert("Error: Unknown");
+        toast(response.message, 3000);
+    } else toast("Error: Unknown", 3000);
 }
-$('form').ajaxForm({
+$("form").ajaxForm({
     beforeSubmit: validate,
     data: {
-        num: function () {
+        num: function() {
             return num;
         }
     },
@@ -108,9 +113,9 @@ $('form').ajaxForm({
         $(".submit").prop("disabled", true);
     },
     uploadProgress: function(event, position, total, percentComplete) {
-        var bar = $(".bar");
-        var percent = $(".percent");
-        var percentVal = percentComplete + "%";
+        let bar = $(".bar");
+        let percent = $(".percent");
+        let percentVal = percentComplete + "%";
         bar.width(percentVal);
         percent.html(percentVal);
     },

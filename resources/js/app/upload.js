@@ -1,32 +1,32 @@
-import $ from 'jquery';
-import ajaxForm from 'jquery-form';
+import $ from "jquery";
+import ajaxForm from "jquery-form";
 
-var x;
-var labelVal;
-$('.inputfile').on('change', function (e) {
-    var label = this.nextElementSibling;
+let x;
+let labelVal;
+$(".inputfile").on("change", function(e) {
+    let label = this.nextElementSibling;
     if (!x) {
         x = 1;
         labelVal = label.innerHTML;
     }
-    var name = null;
-    name = e.target.value.split('\\').pop();
+    let name = null;
+    name = e.target.value.split("\\").pop();
     if (name) {
-        return label.innerHTML = name;
+        return (label.innerHTML = name);
     } else {
         label.innerHTML = labelVal;
     }
 });
 
-$('form').ajaxForm({
+$("form").ajaxForm({
     beforeSubmit: validate,
     success: callback,
     error: error
-})
+});
 
 function validate() {
-    var track = $('.track').val();
-    var title = $('.title').val();
+    let track = $(".track").val();
+    let title = $(".title").val();
     if (track && title) {
         $(".submit").prop("disabled", true);
         return true;
@@ -47,8 +47,7 @@ function callback(response) {
 function error(error) {
     if (error.status == 401) {
         location.assign(login);
-    }
-    else {
+    } else {
         alert(error.responseJSON.message);
     }
     $(".submit").prop("disabled", false);

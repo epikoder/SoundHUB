@@ -7,13 +7,13 @@ var _jqueryForm = _interopRequireDefault(require("jquery-form"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 var _return = false;
-(0, _jquery["default"])('.password').on('keyup', function () {
-  vi('.password', '.div-p');
+(0, _jquery["default"])(".password").on("keyup", function () {
+  vi(".password", ".div-p");
 });
-(0, _jquery["default"])('.c-password').on('keyup', function () {
-  var p = (0, _jquery["default"])('.password').val();
-  var cp = (0, _jquery["default"])('.c-password').val();
-  var d = '.div-cp';
+(0, _jquery["default"])(".c-password").on("keyup", function () {
+  var p = (0, _jquery["default"])(".password").val();
+  var cp = (0, _jquery["default"])(".c-password").val();
+  var d = ".div-cp";
 
   if (p != cp) {
     (0, _jquery["default"])(d).addClass("border-red-300");
@@ -29,7 +29,7 @@ var _return = false;
 function vi(i, d) {
   i = (0, _jquery["default"])(i).val();
 
-  if (i.length <= 5 || i.indexOf(" ") > -1) {
+  if (i.length <= 7 || i.indexOf(" ") > -1) {
     (0, _jquery["default"])(d).addClass("border-red-300");
     (0, _jquery["default"])(d).removeClass("hover:border-green-300");
     _return = false;
@@ -45,20 +45,20 @@ function validate() {
     return _return;
   }
 
-  window.NP.start();
+  NP.start();
 }
 
 function callback() {
-  window.NP.done();
-  location.replace(route);
+  NP.done();
+  location.replace(login);
 }
 
 function errrorcall(error) {
   alert(error.responseJSON.message);
-  window.NP.done();
+  NP.done();
 }
 
-(0, _jquery["default"])('#signup').ajaxForm({
+(0, _jquery["default"])("#signup").ajaxForm({
   beforeSend: validate,
   success: callback,
   error: errrorcall

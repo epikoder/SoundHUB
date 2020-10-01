@@ -11062,18 +11062,18 @@ function validate() {
     return false;
   }
 
-  window.NP.start();
+  NP.start();
 }
 
 function callback() {
-  window.NP.done();
+  NP.done();
   jquery__WEBPACK_IMPORTED_MODULE_0___default()(".form").remove();
   jquery__WEBPACK_IMPORTED_MODULE_0___default()(".frame").load(route);
 }
 
 function errorCall(error) {
   alert(error.responseJSON.message);
-  window.NP.done();
+  NP.done();
 }
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default()("form").ajaxForm({

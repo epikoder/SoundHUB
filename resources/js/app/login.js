@@ -1,40 +1,37 @@
-import $ from 'jquery';
-import ajaxForm from 'jquery-form';
-window.$ = $;
+import $ from "jquery";
+import ajaxForm from "jquery-form";
+import { toast } from "../app";
 
 ////EYE
-var eye;
-$('.eye').on('click', function () {
+let eye;
+$(".eye").on("click", function() {
     if (!eye) {
         eye = true;
-        $('.eye').get([ 0 ]).innerHTML = 'Hide';
-        return $('.password').prop('type', 'text');
+        $(".eye").get([0]).innerHTML = "Hide";
+        return $(".password").prop("type", "text");
     }
     eye = false;
     $(".eye").get([0]).innerHTML = "Show";
     return $(".password").prop("type", "password");
 });
 
-
-$('form').ajaxForm({
+$("form").ajaxForm({
     beforeSubmit: () => {
-        window.NP.start();
+        NP.start();
     },
     success: success,
     error: error
 });
 
-function success(response)
-{
+function success(response) {
     if (response.artist) {
-        location.assign(response.url[ 'dashboard' ]);
+        location.assign(response.url["dashboard"]);
     } else {
-        location.assign(response.url[ 'pay' ]);
+        location.assign(response.url["pay"]);
     }
 }
 
-function error(error)
-{
-    window.NP.done();
-    alert(response.responseJSON.message);
+function error(error) {
+    NP.done();
+    toast(response.responseJSON.message);
 }

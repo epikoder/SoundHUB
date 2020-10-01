@@ -5,8 +5,8 @@
     @php
     $user = Session::get('user');
     @endphp
-    <div class="w-full h-full div">
-        <div class="flex-col cover_art">
+    <div style="background: {{$mainColor[1]}}" class="w-full h-full">
+        <div style="background: {{$mainColor[0]}}" class="flex-col">
             <img class="lg:w-1/6 xl:w-1/6 sm:w-2/4 md:w-2/4 ml-auto mr-auto pt-6 pb-4 art" src=" {{ $track->art }} " alt="">
             <div class="flex info">
                 <div class="ml-auto mr-auto text-bold text-white text-center">
@@ -20,20 +20,20 @@
             </div>
             <div class="py-4 flex">
                 <div class="mr-auto ml-auto flex">
-                    <a href="{{ route('artist', ['id' => $user->id, 'name' => $track->artist]) }}"><span
+                    <a href="{{ route('artist', ['name' => $track->artist]) }}"><span
                             class="px-2 py-1 mx-2 focus:outline-none border-2 b-rounded bg-gray-100 text-black font-bold font-mono">See
                             Artist</span></a>
-                    @if ($track->album_id)
+                    @if ($track->owner_type == 'App\Models\Albums')
                         <a
-                            href="{{ route('album', ['id' => $track->album_id, 'artist' => $track->artist, 'album' => $track->title]) }}"><span
+                            href="{{ route('album', ['artist' => $track->artist, 'slug' => $track->owner->slug]) }}"><span
                                 class="px-2 py-1 mx-2 focus:outline-none border-2 b-rounded bg-gray-100 text-black font-bold font-mono">See
                                 Album</span></a>
                     @endif
-                    <button
+                    <button id="play"
                         class="px-2 mx-2 flex focus:outline-none border-2 b-rounded bg-gray-100 text-black font-bold font-mono">
                         <img class="h-6 px-2"
                             src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTEyIDUxMjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPGc+DQoJCTxwYXRoIGQ9Ik00MTIuOTA3LDIxNC4wOEMzOTguNCwxNDAuNjkzLDMzMy42NTMsODUuMzMzLDI1Niw4NS4zMzNjLTYxLjY1MywwLTExNS4wOTMsMzQuOTg3LTE0MS44NjcsODYuMDgNCgkJCUM1MC4wMjcsMTc4LjM0NywwLDIzMi42NCwwLDI5OC42NjdjMCw3MC43Miw1Ny4yOCwxMjgsMTI4LDEyOGgyNzcuMzMzQzQ2NC4yMTMsNDI2LjY2Nyw1MTIsMzc4Ljg4LDUxMiwzMjANCgkJCUM1MTIsMjYzLjY4LDQ2OC4xNiwyMTguMDI3LDQxMi45MDcsMjE0LjA4eiBNMjU2LDM4NEwxNDkuMzMzLDI3Ny4zMzNoNjRWMTkyaDg1LjMzM3Y4NS4zMzNoNjRMMjU2LDM4NHoiLz4NCgk8L2c+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8L3N2Zz4NCg==" />
-                        <span class="inline-block">Download</span>
+                        <span class="inline-block">Play</span>
                     </button>
                     <button
                         class="px-2 mx-2 flex focus:outline-none border-2 b-rounded bg-gray-100 text-black font-bold font-mono">
@@ -52,30 +52,10 @@
             @includeIf('related')
         </div>
     </div>
-    <script type="module">
-    </script>
-    <style>
-        .cover_art {
-            background: {
-                    {
-                    $mainColor[0]
-                }
-            }
-
-            ;
-            transition: all;
-        }
-
-        .div {
-            background: {
-                    {
-                    $mainColor[1]
-                }
-            }
-
-            ;
-        }
-
-    </style>
-    @includeIf('promotion')
 @endsection
+@push('head')
+@javascript('_type', 'track')
+@javascript('slug', $track->slug)
+@javascript('playUrl', route('play'))
+@javascript('search', route('search'))
+@endpush

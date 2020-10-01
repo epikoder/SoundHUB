@@ -46,18 +46,18 @@ function validate() {
     return false;
   }
 
-  window.NP.start();
+  NP.start();
 }
 
 function callback() {
-  window.NP.done();
+  NP.done();
   (0, _jquery["default"])(".form").remove();
   (0, _jquery["default"])(".frame").load(route);
 }
 
 function errorCall(error) {
   alert(error.responseJSON.message);
-  window.NP.done();
+  NP.done();
 }
 
 (0, _jquery["default"])("form").ajaxForm({

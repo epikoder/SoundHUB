@@ -24,34 +24,34 @@
     <script type="module">
         var tab = '#home';
         $('#home').on('click', function() {
-            window.NP.start();
+            NP.start();
             rc(tab, '#home');
-            $('#content').load('/media.home', function () {
-                window.NP.done();
+            $('#content').load('/media.home', function() {
+                NP.done();
             });
         });
         $('#upload').on('click', function() {
-            window.NP.start();
+            NP.start();
             rc(tab, '#upload');
             $('#content').load('/media.upload', function() {
-                window.NP.done();
+                NP.done();
                 $('.select2').select2();
             });
 
         });
         $('#al-upload').on('click', function() {
-            window.NP.start();
+            NP.start();
             rc(tab, '#al-upload');
             $('#content').load('/media.al-upload', function() {
-                window.NP.done();
+                NP.done();
                 $('.select2').select2();
             });
         });
         $('#manage').on('click', function() {
-            window.NP.start();
+            NP.start();
             rc(tab, '#manage');
-            $('#content').load('/media.manage', function () {
-                window.NP.done();
+            $('#content').load('/media.manage', function() {
+                NP.done();
             });
 
         });
@@ -62,11 +62,11 @@
             tab = y;
         }
 
-        $(document).ready(function() {
+        $(function() {
             $('#media').addClass('bg-gray-900 text-white');
             $('#home').addClass('text-blue-500');
-            $('#content').load('/media.home', function () {
-                window.NP.done();
+            $('#content').load('/media.home', function() {
+                NP.done();
             });
         });
 

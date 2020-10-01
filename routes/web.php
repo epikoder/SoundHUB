@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 //////////////// W E B /////////////////////////////////////////
-Route::namespace('WEB')->domain(env('APP_URL'))->group(function () {
+Route::namespace('WEB')->domain(Config::get('app.url'))->group(function () {
     Route::get('/', 'Routes\MediaController@indexRedirect')->name('home');
     Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
         /// Signup
@@ -32,13 +33,11 @@ Route::namespace('WEB')->domain(env('APP_URL'))->group(function () {
 
         // Payment
         Route::group(['prefix' => 'pay'], function () {
-
             Route::get('paystack/callback', 'Payment\PaymentController@handleGatewayCallback')->name('paystack.callback');
             Route::get('paystack/wh_z', 'Payment\PaymentController@handleGatewayWebhook')->name('paystack.webhook');
-            Route::get('paystack/pay', 'Payment\PaymentController@payRoute')->name('paystack/pay');
 
             Route::group(['middleware' => 'auth'], function () {
-                Route::get('plans', 'Routes\PayController@plans')->name('plans');
+                Route::get('info', 'Routes\PayController@plans')->name('pay/info');
                 Route::post('paystack/pay', 'Payment\PaymentController@redirectToGateway')->name('paystack.pay');
             });
         });
@@ -61,19 +60,23 @@ Route::namespace('WEB')->domain(env('APP_URL'))->group(function () {
             Route::get('/{name}/dashboard/media', 'Routes\MediaController@indexMedia')->name('dashboard/mediaindex');
             Route::get('/{name}/dashboard/password', 'Routes\ArtistsController@password')->name('dashboard/password');
             Route::get('/{name}/dashboard/picture', 'Routes\ArtistsController@picture')->name('dashboard/picture');
-            Route::get('/{name}/dashboard/promo', 'Routes\ArtistsController@promo')->name('dashboard/promo');
-            Route::get('/{name}/dashboard/promo_stats', 'Routes\ArtistsController@promostats')->name('dashboard/promostats');
         });
 
         // APP
-
         Route::get('/', 'Routes\MediaController@index')->name('home/v1');
-        Route::get('/track/{artist}/{title}', 'Routes\MediaController@track')->name('track');
-        Route::get('/album/{artist}/{album}', 'Routes\MediaController@album')->name('album');
-        Route::get('/artists/{name}', 'Routes\MediaController@artist')->name('artist');
-        //Route::get('/download/{type}/{artist}/{id}/{title}', 'Media\MediaManager@download')->name('download')->where('id', '[0-9]');
 
-        Route::get('/support/suspended', 'Routes\ArtistsController@support')->name('support/suspended');
+        Route::get('browse', 'Routes\MediaController@browse')->name('browse');
+        Route::get('/play', 'Routes\MediaController@play')->name('play');
+        Route::get('/songs/{artist}', 'Routes\MediaController@allArtistTracks')->name('all/artist/track');
+        Route::get('/songs/{artist}/{slug}', 'Routes\MediaController@tracks')->name('track');
+
+        Route::get('/albums/{artist}', 'Routes\MediaController@allArtistAlbums')->name('all/artist/album');
+        Route::get('/albums/{artist}/{slug}', 'Routes\MediaController@albums')->name('album');
+
+        Route::get('/artists', 'Routes\MediaController@allArtists')->name('all/artist');
+        Route::get('/artists/{name}', 'Routes\MediaController@artists')->name('artist');
+
+        Route::get('search', 'Routes\MediaController@search')->name('search');
     });
     //////////////// W E B ////////////////////////////////
 
@@ -83,7 +86,7 @@ Route::namespace('WEB')->domain(env('APP_URL'))->group(function () {
 ######################################################
 ################## Begin of Admin ####################
 ######################################################
-Route::namespace('ADMIN')->domain('admin.' . env('APP_URL'))->group(function () {
+Route::namespace('ADMIN')->domain('admin.' .Config::get('app.url'))->group(function () {
     Route::get('/', 'Views@indexRedirect');
     Route::group(['prefix' => 'v1'], function () {
         // Login
@@ -91,6 +94,9 @@ Route::namespace('ADMIN')->domain('admin.' . env('APP_URL'))->group(function () 
         Route::post('login', 'Admin@login')->name('login.admin');
 
         Route::group(['middleware' => ['auth', 'admin']], function () {
+            //Artist & User
+            Route::post('/dashboard/user/create', 'Root\UserManager@createUser')->name('create.user');
+            Route::post('/dashboard/artist/create', 'Root\UserManager@createArtist')->name('create.artist');
 
             // Media Upload
             Route::post('upload', 'Media\MediaManager@upload')->name('admin.upload');
@@ -105,8 +111,3 @@ Route::namespace('ADMIN')->domain('admin.' . env('APP_URL'))->group(function () 
 ######################################################
 ############ End of Admin ############################
 ######################################################
-
-/////////// DEV //////////////////////////////
-Route::get('/up', 'DEV@up');
-Route::get('/make', 'DEV@make');
-

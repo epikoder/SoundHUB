@@ -4,10 +4,11 @@
     <form action={{route('.setup')}} method="post" class="m-auto mt-12 p-4 border bg-white">
         <h1 class="p-4"><strong>Let's set up name for your account</strong></h1>
         <p class="p-4">
-            {{env('APP_NAME')}} uses unique name to identify artists,<br>
-             one name cannot be used by more than one account, if your <br>
-             artist name is already in use and your artist name is recognised <br>
-             please contact our support to help retrive your name
+            {{Config::get('app.name')}} uses unique name to identify artists,<br>
+             one name cannot be used by more than one artist, if your <br>
+             artist name is already in use and is recognised <br>
+             please contact our support to help retrive your name <br> <br>
+             <strong>Artist name cannot be changed after setup</strong>
         </p>
         <div class="p-4 w-full block">
             @csrf
@@ -21,8 +22,8 @@
         </div>
     </form>
 </div>
+@endsection
 @push('head')
 @javascript('query', route('queryName'))
 <script src={{asset('js/app/setup.js')}} type="module"></script>
 @endpush
-@endsection

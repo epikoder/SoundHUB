@@ -1,10 +1,10 @@
-import $ from 'jquery';
-import ajaxForm from 'jquery-form';
+import $ from "jquery";
+import ajaxForm from "jquery-form";
 
-var regexEmail = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);
+let regexEmail = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);
 
 $(".name").on("keyup", function() {
-    var name = $(".name").val();
+    let name = $(".name").val();
     if (name.length <= 5 || name.indexOf(" ") > -1) {
         $(".name_error").removeClass("text-blue-500");
         $(".name_error").addClass("text-red-600");
@@ -15,7 +15,7 @@ $(".name").on("keyup", function() {
 });
 
 $(".email").on("keyup", function() {
-    var email = $(".email").val();
+    let email = $(".email").val();
     if (!regexEmail.test(email) || email.indexOf(" ") > -1) {
         $(".email_error").removeClass("text-blue-500");
         $(".email_error").addClass("text-red-600");
@@ -26,8 +26,8 @@ $(".email").on("keyup", function() {
 });
 
 function validate() {
-    var name = $(".name").val();
-    var email = $(".email").val();
+    let name = $(".name").val();
+    let email = $(".email").val();
     if (name.length <= 5 || name.indexOf(" ") > -1) {
         alert("Please fill in the form");
         return false;
@@ -36,18 +36,18 @@ function validate() {
         alert("Enter a valid email address");
         return false;
     }
-    window.NP.start();
+    NP.start();
 }
 
 function callback() {
-    window.NP.done();
+    NP.done();
     $(".form").remove();
     $(".frame").load(route);
 }
 
 function errorCall(error) {
     alert(error.responseJSON.message);
-    window.NP.done();
+    NP.done();
 }
 
 $("form").ajaxForm({

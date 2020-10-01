@@ -2,18 +2,6 @@
 @section('title', 'dashboard')
 
 @section('content')
-@push('head')
-    <script src={{ asset('js/app/dashboard.js') }} type="module"></script>
-    @javascript('logout', route('logout'))
-    @if (!json_decode($artist->social)->instagram && !json_decode($artist->social)->twitter)
-    @javascript('no_handle', true)
-    @else
-    @javascript('no_handle', false)
-    @endif
-    @if (Session::get('init'))
-    @includeIf('init')
-    @endif
-@endpush
     <div class="flex">
         <div class="p-1 sm:w-full md:w-3/4 lg:w-2/4 xl:w-2/4 flex-col m-auto">
             <div class="w-full m-1 px-1 justify-between flex">
@@ -60,16 +48,16 @@
                             class="p-1 w-full cursor-pointer shadow border-l-4 border-r-4 hover:border-gray-700 input">
                             Profile</p>
                         <div id="profileI" class="font-sans text-sm">
-                                <a href={{ route('dashboard/password', ['name' => $artist->name]) }} class="outline-none">
-                                    <div class="w-full h-8 py-1 hover:bg-gray-500">
-                                        Change password
-                                    </div>
-                                </a>
-                                <a href={{ route('dashboard/picture', ['name' => $artist->name]) }} class="outline-none">
-                                    <div class="w-full h-8 py-1 hover:bg-gray-500">
-                                        Change profile picture
-                                    </div>
-                                </a>
+                            <a href={{ route('dashboard/password', ['name' => $artist->name]) }} class="outline-none">
+                                <div class="w-full h-8 py-1 hover:bg-gray-500">
+                                    Change password
+                                </div>
+                            </a>
+                            <a href={{ route('dashboard/picture', ['name' => $artist->name]) }} class="outline-none">
+                                <div class="w-full h-8 py-1 hover:bg-gray-500">
+                                    Change profile picture
+                                </div>
+                            </a>
                         </div>
                     </div>
                     <div class="flex-col rounded my-2">
@@ -77,25 +65,21 @@
                             class="p-1 w-full cursor-pointer shadow border-l-4 border-r-4 hover:border-gray-700 input">Media
                         </p>
                         <div id="mediaI" class="font-sans text-sm">
-                            <a
-                                    href={{ route('dashboard/mediaindex', ['name' => $artist->name]) }}
-                                    class="outline-none">
-                                    <div class="w-full h-8 py-1 hover:bg-gray-500">
-                                        Manage Songs
-                                    </div>
-                                </a>
-                            <a
-                                    href={{ route('dashboard/upload', ['name' => $artist->name]) }}
-                                    class="outline-none">
+                            <a href={{ route('dashboard/mediaindex', ['name' => $artist->name]) }} class="outline-none">
                                 <div class="w-full h-8 py-1 hover:bg-gray-500">
-                                        Upload Song
-                                    </div></a>
-                            <a
-                                    href={{ route('dashboard/album', ['name' => $artist->name]) }}
-                                    class=" outline-none">
+                                    Manage Songs
+                                </div>
+                            </a>
+                            <a href={{ route('dashboard/upload', ['name' => $artist->name]) }} class="outline-none">
                                 <div class="w-full h-8 py-1 hover:bg-gray-500">
-                                        Upload Album
-                                    </div></a>
+                                    Upload Song
+                                </div>
+                            </a>
+                            <a href={{ route('dashboard/album', ['name' => $artist->name]) }} class=" outline-none">
+                                <div class="w-full h-8 py-1 hover:bg-gray-500">
+                                    Upload Album
+                                </div>
+                            </a>
                         </div>
                     </div>
                     <div class="flex-col rounded my-2">
@@ -103,52 +87,52 @@
                             class="p-1 w-full cursor-pointer shadow border-l-4 border-r-4 hover:border-gray-700 input">
                             Promote Song</p>
                         <div id="promoI" class="px-5 font-sans text-sm">
-                            <a
-                                    href={{ route('dashboard/promo', ['name' => $artist->name]) }}
-                                    class="outline-none">
+                            <a href={{ route('dashboard/promo', ['name' => $artist->name]) }} class="outline-none">
                                 <div class="w-full h-8 py-1 hover:bg-gray-500">
-                                        Promote Song / Album
-                                    </div></a>
-                                    <a
-                                    href={{ route('dashboard/promostats', ['name' => $artist->name]) }}
-                                    class="outline-none">
-                                    <div class="w-full h-8 py-1 hover:bg-gray-500">
-                                        In review
-                                    </div>
-                                </a>
+                                    Promote Song / Album
+                                </div>
+                            </a>
+                            <a href={{ route('dashboard/promostats', ['name' => $artist->name]) }} class="outline-none">
+                                <div class="w-full h-8 py-1 hover:bg-gray-500">
+                                    In review
+                                </div>
+                            </a>
                         </div>
                     </div>
                     <div class="flex-col rounded my-2">
-                        <a href=><div
-                            class="p-1 w-full cursor-pointer shadow border-l-4 border-r-4 hover:border-gray-700 input">
-                            Stats</div></a>
+                        <a href=>
+                            <div class="p-1 w-full cursor-pointer shadow border-l-4 border-r-4 hover:border-gray-700 input">
+                                Stats</div>
+                        </a>
                     </div>
                     <div class="flex-col rounded my-2">
                         <p id="settings"
                             class="p-1 w-full cursor-pointer shadow border-l-4 border-r-4 hover:border-gray-700 input">
                             Settings</p>
                         <div id="settingsI" class="px-5 font-sans text-sm">
-                            <a
-                                    href={{ route('dashboard/mediaindex', ['name' => $artist->name]) }}
-                                    class="outline-none"><div class="w-full h-8 py-1 hover:bg-gray-500">
-                                        In-review
-                                    </div></a>
-                            <a
-                                    href={{ route('dashboard/upload', ['name' => $artist->name]) }}
-                                    class="outline-none"><div class="w-full h-8 py-1 hover:bg-gray-500">
-                                        in review
-                                    </div></a>
-                            <a
-                                    href={{ route('dashboard/album', ['name' => $artist->name]) }}
-                                    class=" outline-none"><div class="w-full h-8 py-1 hover:bg-gray-500">
-                                        in reviw
-                                    </div></a>
+                            <a href={{ route('dashboard/mediaindex', ['name' => $artist->name]) }} class="outline-none">
+                                <div class="w-full h-8 py-1 hover:bg-gray-500">
+                                    In-review
+                                </div>
+                            </a>
+                            <a href={{ route('dashboard/upload', ['name' => $artist->name]) }} class="outline-none">
+                                <div class="w-full h-8 py-1 hover:bg-gray-500">
+                                    in review
+                                </div>
+                            </a>
+                            <a href={{ route('dashboard/album', ['name' => $artist->name]) }} class=" outline-none">
+                                <div class="w-full h-8 py-1 hover:bg-gray-500">
+                                    in reviw
+                                </div>
+                            </a>
                         </div>
                     </div>
                     <div class="flex-col rounded my-2">
-                        <div><div
-                            class="logout p-1 w-full cursor-pointer shadow border-l-4 border-r-4 hover:border-gray-700 input">
-                            Logout</div></div>
+                        <div>
+                            <div
+                                class="logout p-1 w-full cursor-pointer shadow border-l-4 border-r-4 hover:border-gray-700 input">
+                                Logout</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -170,13 +154,13 @@
                 <div class="mb-1">
                     <input type="text" name="instagram"
                         class="w-full px-1 focus:bg-white outline-none border-b-2 focus:border-green-300 input"
-                        value="{{ json_decode($artist->social)->instagram }}" placeholder="{{ env('APP_NAME') }}">
+                        value="{{ json_decode($artist->social)->instagram }}" placeholder="{{ Config::get('app.name') }}">
                 </div>
                 <label for="IG">Twitter</label>
                 <div class="mb-1">
                     <input type="text" name="twitter"
                         class="w-full px-1 focus:bg-white outline-none border-b-2 focus:border-green-300 input"
-                        value="{{ json_decode($artist->social)->twitter }}" placeholder="{{ env('APP_NAME') }}">
+                        value="{{ json_decode($artist->social)->twitter }}" placeholder="{{ Config::get('app.name') }}">
                 </div>
                 <div class="w-full text-right m-1">
                     <button
@@ -186,3 +170,16 @@
         </div>
     </div>
 @endsection
+@push('head')
+    @javascript('search', route('search'))
+    @javascript('logout', route('logout'))
+    <script src={{ asset('js/app/dashboard.js') }} type="module"></script>
+    @if (!json_decode($artist->social)->instagram && !json_decode($artist->social)->twitter)
+        @javascript('no_handle', true)
+    @else
+        @javascript('no_handle', false)
+    @endif
+    @if (Session::get('init'))
+        @includeIf('init')
+    @endif
+@endpush

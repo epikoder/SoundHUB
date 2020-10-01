@@ -11023,13 +11023,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var _return = false;
-jquery__WEBPACK_IMPORTED_MODULE_0___default()('.password').on('keyup', function () {
-  vi('.password', '.div-p');
+jquery__WEBPACK_IMPORTED_MODULE_0___default()(".password").on("keyup", function () {
+  vi(".password", ".div-p");
 });
-jquery__WEBPACK_IMPORTED_MODULE_0___default()('.c-password').on('keyup', function () {
-  var p = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.password').val();
-  var cp = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.c-password').val();
-  var d = '.div-cp';
+jquery__WEBPACK_IMPORTED_MODULE_0___default()(".c-password").on("keyup", function () {
+  var p = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".password").val();
+  var cp = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".c-password").val();
+  var d = ".div-cp";
 
   if (p != cp) {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(d).addClass("border-red-300");
@@ -11045,7 +11045,7 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()('.c-password').on('keyup', functio
 function vi(i, d) {
   i = jquery__WEBPACK_IMPORTED_MODULE_0___default()(i).val();
 
-  if (i.length <= 5 || i.indexOf(" ") > -1) {
+  if (i.length <= 7 || i.indexOf(" ") > -1) {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(d).addClass("border-red-300");
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(d).removeClass("hover:border-green-300");
     _return = false;
@@ -11061,20 +11061,20 @@ function validate() {
     return _return;
   }
 
-  window.NP.start();
+  NP.start();
 }
 
 function callback() {
-  window.NP.done();
-  location.replace(route);
+  NP.done();
+  location.replace(login);
 }
 
 function errrorcall(error) {
   alert(error.responseJSON.message);
-  window.NP.done();
+  NP.done();
 }
 
-jquery__WEBPACK_IMPORTED_MODULE_0___default()('#signup').ajaxForm({
+jquery__WEBPACK_IMPORTED_MODULE_0___default()("#signup").ajaxForm({
   beforeSend: validate,
   success: callback,
   error: errrorcall

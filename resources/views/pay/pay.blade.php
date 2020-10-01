@@ -17,7 +17,7 @@
                     <div
                         class="m-auto sm:w-3/4 md:w-2/4 lg:w-1/4 xl:w-1/4 pt-4 bg-black text-white text-center border-2 border-black b-rounded">
                         <div>
-                            <img src="" alt={{ env('APP_NAME') }} class="m-auto">
+                            <img src="" alt={{ Config::get('app.name') }} class="m-auto">
                         </div>
                         <div class="py-4 px-2 text-white flex-col b-rounded bg-teal-900">
                             <form action={{ route('paystack.pay') }} method="post">
@@ -27,8 +27,8 @@
                                     <input type="hidden" name="plan" value={{ $plan->code }}>
                                     <input type="hidden" name="amount" value={{ $plan->price }}>
                                     <input type="hidden" name="currency" value="USD">
-                                    <input type="hidden" name="email" value={{$user->email}}>
-                                    <input type="hidden" name="reference" value={{Paystack::genTranxRef()}}>
+                                    <input type="hidden" name="email" value={{ $user->email }}>
+                                    <input type="hidden" name="reference" value={{ Paystack::genTranxRef() }}>
                                     <p><strong class="text-2xl">${{ $plan->price }}/yr</strong></p>
                                 </div>
                                 <div class="features py-8 font-mono">
@@ -43,7 +43,8 @@
                                             <strong>1 week promoting on new song</strong>
                                         </li>
                                         <li>
-                                            <strong>Artists page + Social handle <a href="" class="text-sm text-green-400">see</a></strong>
+                                            <strong>Artists page + Social handle <a href=""
+                                                    class="text-sm text-green-400">see</a></strong>
                                         </li>
                                     </ol>
                                 </div>

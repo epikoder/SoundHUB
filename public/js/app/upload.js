@@ -11024,7 +11024,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var x;
 var labelVal;
-jquery__WEBPACK_IMPORTED_MODULE_0___default()('.inputfile').on('change', function (e) {
+jquery__WEBPACK_IMPORTED_MODULE_0___default()(".inputfile").on("change", function (e) {
   var label = this.nextElementSibling;
 
   if (!x) {
@@ -11033,7 +11033,7 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()('.inputfile').on('change', functio
   }
 
   var name = null;
-  name = e.target.value.split('\\').pop();
+  name = e.target.value.split("\\").pop();
 
   if (name) {
     return label.innerHTML = name;
@@ -11041,15 +11041,15 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()('.inputfile').on('change', functio
     label.innerHTML = labelVal;
   }
 });
-jquery__WEBPACK_IMPORTED_MODULE_0___default()('form').ajaxForm({
+jquery__WEBPACK_IMPORTED_MODULE_0___default()("form").ajaxForm({
   beforeSubmit: validate,
   success: callback,
   error: error
 });
 
 function validate() {
-  var track = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.track').val();
-  var title = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.title').val();
+  var track = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".track").val();
+  var title = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".title").val();
 
   if (track && title) {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(".submit").prop("disabled", true);

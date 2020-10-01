@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -48372,7 +48372,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var _char = jquery__WEBPACK_IMPORTED_MODULE_1___default()(".users")[0].getContext('2d');
+var _char = jquery__WEBPACK_IMPORTED_MODULE_1___default()(".users")[0].getContext("2d");
 
 _char = new chart_js__WEBPACK_IMPORTED_MODULE_0___default.a(_char, {
   type: "doughnut",
@@ -48391,7 +48391,7 @@ console.log(artists);
 
 /***/ }),
 
-/***/ 8:
+/***/ 9:
 /*!********************************************!*\
   !*** multi ./resources/js/admin/dashboard ***!
   \********************************************/

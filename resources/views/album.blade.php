@@ -5,8 +5,8 @@
     @php
     $user = Session::get('user');
     @endphp
-    <div class="w-full h-full div">
-        <div class="flex-col relative cover_art">
+    <div style="background: {{ $mainColor[1] }}" class="w-full h-full ">
+        <div style="background: {{ $mainColor[0] }}" class="flex-col relative">
             <div class="art-card relative flex">
                 <img class="lg:w-1/6 xl:w-1/6 sm:w-2/4 md:w-2/4 pt-6 pb-4 ml-auto mr-auto art-album relative z-30"
                     src=" {{ $album->art }} " alt="">
@@ -24,14 +24,17 @@
             </div>
             <div class="py-6 flex">
                 <div class="mr-auto ml-auto flex">
-                    <a href="{{ route('artist', ['id' => $user_id, 'name' => $album->artist]) }}"><span
-                            class="px-2 py-1 mx-2 focus:outline-none border-2 b-rounded bg-gray-100 text-black font-bold font-mono">See
-                            Artist</span></a>
+                    <a href="{{ route('artist', ['name' => $album->artist]) }}">
+                        <span
+                            class="px-2 py-1 mx-2 focus:outline-none border-2 b-rounded bg-gray-100 text-black font-bold font-mono">
+                            See Artist
+                        </span>
+                    </a>
                     <button
                         class="px-2 mx-2 flex focus:outline-none border-2 b-rounded bg-gray-100 text-black font-bold font-mono">
                         <img class="h-6 px-2"
                             src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTEyIDUxMjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPGc+DQoJCTxwYXRoIGQ9Ik00MTIuOTA3LDIxNC4wOEMzOTguNCwxNDAuNjkzLDMzMy42NTMsODUuMzMzLDI1Niw4NS4zMzNjLTYxLjY1MywwLTExNS4wOTMsMzQuOTg3LTE0MS44NjcsODYuMDgNCgkJCUM1MC4wMjcsMTc4LjM0NywwLDIzMi42NCwwLDI5OC42NjdjMCw3MC43Miw1Ny4yOCwxMjgsMTI4LDEyOGgyNzcuMzMzQzQ2NC4yMTMsNDI2LjY2Nyw1MTIsMzc4Ljg4LDUxMiwzMjANCgkJCUM1MTIsMjYzLjY4LDQ2OC4xNiwyMTguMDI3LDQxMi45MDcsMjE0LjA4eiBNMjU2LDM4NEwxNDkuMzMzLDI3Ny4zMzNoNjRWMTkyaDg1LjMzM3Y4NS4zMzNoNjRMMjU2LDM4NHoiLz4NCgk8L2c+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8L3N2Zz4NCg==" />
-                        <span class="inline-block">Download</span>
+                        <span class="inline-block">Play</span>
                     </button>
                     <button
                         class="px-2 mx-2 flex focus:outline-none border-2 b-rounded bg-gray-100 text-black font-bold font-mono">
@@ -61,7 +64,7 @@
                     @endphp
                     <div class="flex justify-between py-4 text-white">
                         <a
-                            href="{{ route('track', ['id' => $track->id, 'artist' => $track->artist, 'title' => $track->title]) }}">
+                            href="{{ route('track', ['artist' => $track->artist, 'slug' => $track->slug]) }}">
                             <span class="mr-4">{{ $track->title }}</span>
                         </a>
                         <span> {{ $track->duration }} </span>
@@ -74,28 +77,4 @@
             @includeIf('related')
         </div>
     </div>
-    <style>
-        .cover_art {
-            background: {
-                    {
-                    $mainColor[0]
-                }
-            }
-
-            ;
-            transition: all;
-        }
-
-        .div {
-            background: {
-                    {
-                    $mainColor[1]
-                }
-            }
-
-            ;
-        }
-
-    </style>
-    @includeIf('promotion')
 @endsection
