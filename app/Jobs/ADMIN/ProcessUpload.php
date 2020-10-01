@@ -38,7 +38,7 @@ class ProcessUpload implements ShouldQueue
     public function handle()
     {
         $rand = Str::random();
-        $file = 'temp/'.$rand.'.mp3';
+        $file = 'temp/' . $rand . '.mp3';
         $def = storage_path('/default.png');
         Storage::disk('local')->put($file, Storage::get($this->data['track']));
         if (PHP_OS == 'WINNT') {
@@ -46,10 +46,10 @@ class ProcessUpload implements ShouldQueue
                 [
                     'eyeD3',
                     '-t', $this->data['title'],
-                    '-a', $this->data['artist'],
+                    '-a', $this->data['artist']->name,
                     '-G', $this->data['genre'],
                     '-A', $this->data['album'],
-                    '-c', 'Downloaded at' . env('APP_NAME') . 'com',
+                    '-c', 'Downloaded at' . Config::get('app.name') . 'com',
                     storage_path('app') . DIRECTORY_SEPARATOR . $file
                 ],
                 getcwd() . '\app\Console\bin',
@@ -60,10 +60,10 @@ class ProcessUpload implements ShouldQueue
                 [
                     'eyeD3',
                     '-t', $this->data['title'],
-                    '-a', $this->data['artist'],
+                    '-a', $this->data['artist']->name,
                     '-G', $this->data['genre'],
                     '-A', $this->data['album'],
-                    '-c', 'Downloaded at' . env('APP_NAME') . 'com',
+                    '-c', 'Downloaded at' . Config::get('app.name') . 'com',
                     storage_path('app') . DIRECTORY_SEPARATOR . $file
                 ],
                 getcwd() . DIRECTORY_SEPARATOR . '/app/Console/usr/bin',
@@ -130,11 +130,9 @@ class ProcessUpload implements ShouldQueue
         Storage::put($this->data['track'], Storage::disk('local')->get($file));
         Storage::disk('local')->delete($file);
 
-        //// USER SOUNDHUB
-        $user = User::find(1);
-        $user->tracks()->create([
-            'title' => $this->data['title'].$this->data['feat'],
-            'artist' => $this->data['artist'],
+        $this->data['artist']->tracks()->create([
+            'title' => $this->data['title'] . $this->data['feat'],
+            'artist' => $this->data['artist']->name,
             'genre' => $this->data['genre'],
             'duration' => $duration,
             'url' => $this->data['track'],

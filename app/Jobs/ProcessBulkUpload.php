@@ -47,10 +47,10 @@ class ProcessBulkUpload implements ShouldQueue
             $this->art = 'data:image/webp' . ';base64,' . base64_encode(file_get_contents(storage_path('app') . DIRECTORY_SEPARATOR . $image));
         }
 
-        $album = $this->data['user']->albums()->create([
+        $album = $this->data['artist']->albums()->create([
             'title' => $this->data['title'],
             'slug' => $this->data['slug'],
-            'artist' => $this->data['artist'],
+            'artist' => $this->data['artist']->name,
             'genre' => $this->data['genre'],
             'track_num' => $this->data['num'],
             'art' => $this->art,
@@ -69,12 +69,12 @@ class ProcessBulkUpload implements ShouldQueue
                     [
                         'eyeD3',
                         '-t', $this->data['tracks']->$a->title,
-                        '-a', $this->data['artist'] . $this->data['tracks']->$a->feat,
-                        '-b', $this->data['artist'],
+                        '-a', $this->data['artist']->name . $this->data['tracks']->$a->feat,
+                        '-b', $this->data['artist']->name,
                         '-n', $a,
                         '-A', $this->data['title'],
                         '-G', $this->data['genre'],
-                        '-c', 'Downloaded at' . env('APP_NAME') . 'com',
+                        '-c', 'Downloaded at' . Config::get('app.name') . 'com',
                         storage_path('app') . DIRECTORY_SEPARATOR . $file
                     ],
                     getcwd() . '\app\Console\bin',
@@ -85,12 +85,12 @@ class ProcessBulkUpload implements ShouldQueue
                     [
                         'eyeD3',
                         '-t', $this->data['tracks']->$a->title,
-                        '-a', $this->data['artist'] . $this->data['tracks']->$a->feat,
-                        '-b', $this->data['artist'],
+                        '-a', $this->data['artist']->name . $this->data['tracks']->$a->feat,
+                        '-b', $this->data['artist']->name,
                         '-n', $a,
                         '-A', $this->data['title'],
                         '-G', $this->data['genre'],
-                        '-c', 'Downloaded at' . env('APP_NAME') . 'com',
+                        '-c', 'Downloaded at' . Config::get('app.name') . 'com',
                         storage_path('app') . DIRECTORY_SEPARATOR . $file
                     ],
                     getcwd() . DIRECTORY_SEPARATOR . '/app/Console/usr/bin',
@@ -162,7 +162,7 @@ class ProcessBulkUpload implements ShouldQueue
             ]);
         }
         if ($this->total_duration) {
-            $album->duration = MP3File::formatTime($this->total_duration).' min';
+            $album->duration = MP3File::formatTime($this->total_duration) . ' min';
             $album->save();
         }
     }

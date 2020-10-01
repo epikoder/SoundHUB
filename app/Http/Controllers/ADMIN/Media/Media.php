@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\ADMIN\Media;
 
+use App\Http\Controllers\MediaQuery;
+use App\Models\EliteArtists;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -10,6 +12,8 @@ use Illuminate\Support\Str;
 
 trait Media
 {
+    use MediaQuery;
+
     public function save(Request $request)
     {
         $validation = Validator::make($request->all(), [
@@ -24,22 +28,22 @@ trait Media
 
         $data['feat'] = null;
         if ($request->feat) {
-            $data['feat'] = ' (feat '. $request->feat . ' )';
+            $data['feat'] = ' (feat ' . $request->feat . ' )';
         }
         $data['track'] = $request->file('track');
         $data['title'] = $request->title;
-        $data['slug'] = Str::slug($request->title);
+        $data['slug'] = $this->slugUnique($request->title, '\App\Models\Tracks');
         $data['artist'] = $this->artist($request->artist);
         $data['genre'] = $this->genre($request->genre, $request->c_genre);
         $data['admin'] = $request->user()->admins->uuid;
-        $data['album'] = env('APP_NAME');
+        $data['album'] = Config::get('app.name');
         $data['art'] = null;
         if ($request->art) {
             $data['append_art'] = $request->append_art;
             $art = $request->file('art');
-            $data['art'] = Storage::putFileAs('songs/' . $data['artist'] . '/images', $art, $data['title'] . '.' . $art->getClientOriginalExtension());
+            $data['art'] = Storage::putFileAs('songs/' . $data['artist']->name . '/images', $art, $data['title'] . '.' . $art->getClientOriginalExtension());
         }
-        $data['track'] = Storage::putFileAs('songs/' . $data['artist'], $data['track'], $data['title'] . '.' . $data['track']->getClientOriginalExtension());
+        $data['track'] = Storage::putFileAs('songs/' . $data['artist']->name, $data['track'], $data['title'] . '.' . $data['track']->getClientOriginalExtension());
         return $data;
     }
 
@@ -67,19 +71,19 @@ trait Media
                 if ($validation->fails()) {
                     return 'Error: Failed to validate track ' . $x;
                 }
-                $title = 'title'.$x;
-                $artist = 'artist'.$x;
-                $track = 'track'.$x;
+                $title = 'title' . $x;
+                $artist = 'artist' . $x;
+                $track = 'track' . $x;
                 $var = json_decode('{}');
-                $var->artist = $this->artist($request->$artist);
+                $var->artist = ($this->artist($request->$artist))->name;
                 $var->track = $request->$track;
                 $var->title = $request->$title;
-                $var->slug = Str::slug($request->$title);
+                $var->slug = $this->slugUnique($request->$title, '\App\Models\Albums');
                 $var->feat = null;
 
-                $feat = 'feat'.$x;
+                $feat = 'feat' . $x;
                 if ($request->$feat) {
-                    $feat = ' (feat '.$request->$feat.' )';
+                    $feat = ' (feat ' . $request->$feat . ' )';
                     $var->feat = $feat;
                 }
                 $tracks->$x = $var;
@@ -89,17 +93,17 @@ trait Media
         $data['artist'] = $this->artist($request->artist);
         $data['art'] = null;
         $data['title'] = $request->title;
-        $data['slug'] = Str::slug($request->title);
+        $data['slug'] = $this->slugUnique($request->title, '\App\Models\Albums');
         $data['genre'] = $this->genre($request->genre, $request->c_genre);
         $data['admin'] = $request->user()->admins->uuid;
         if ($request->art) {
             $data['append_art'] = $request->append_art;
             $art = $request->file('art');
-            $data['art'] = Storage::putFileAs('songs/' . $data['artist'].DIRECTORY_SEPARATOR.$data['title'], $art, 'front_cover'. '.' . $art->getClientOriginalExtension());
+            $data['art'] = Storage::putFileAs('songs/' . $data['artist']->name . DIRECTORY_SEPARATOR . $data['title'], $art, 'front_cover' . '.' . $art->getClientOriginalExtension());
         }
         --$x;
         for ($a = 1; $a <= $x; $a++) {
-            $tracks->$a->track = Storage::putFileAs('songs/' . $data['artist'].DIRECTORY_SEPARATOR.$data['title'], $tracks->$a->track, $tracks->$a->title . '.' . $tracks->$a->track->getClientOriginalExtension());
+            $tracks->$a->track = Storage::putFileAs('songs/' . $data['artist']->name . DIRECTORY_SEPARATOR . $data['title'], $tracks->$a->track, $tracks->$a->title . '.' . $tracks->$a->track->getClientOriginalExtension());
         }
         $data['tracks'] = $tracks;
         $data['num'] = $x;
@@ -108,7 +112,7 @@ trait Media
 
     public function artist(int $artist)
     {
-        return DB::table('elite_artist')->find($artist) ? (DB::table('elite_artist')->find($artist))->name : false;
+        return EliteArtists::find($artist);
     }
 
     public function genre(int $genre = null, string $c_genre = null)
@@ -120,6 +124,6 @@ trait Media
         if ($c_genre) {
             return trim($c_genre);
         }
-        return env('APP_NAME');
+        return Config::get('app.name');
     }
 }

@@ -46,9 +46,9 @@ trait AuthFacade
         return strtolower($email);
     }
 
-    public function auth (Request $request)
+    public function auth (Request $request, $password = null)
     {
-        $credentials = ['email' => $request->email, 'password' => $request->password];
+        $credentials = ['email' => $request->email, 'password' => ($password) ? $password : $request->password];
         if (!Auth::attempt($credentials)) {
             return false;
         }

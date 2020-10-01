@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Albums;
 use App\Models\Artists;
 use App\Models\EliteArtists;
+use App\Models\PlayCount;
 use App\Models\Tracks;
 use App\User;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-use League\ColorExtractor\Color;
-use League\ColorExtractor\Palette;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
 
 trait MediaQuery
@@ -18,182 +19,186 @@ trait MediaQuery
      * Get All tracks from Database
      *
      * @param int $count
+     * @return \Illuminate\Support\Collection
      */
-    public function getAllTracks($count = 20)
+    public function getNewTracks( $count = 20)
     {
-        $DBtracks = Tracks::all();
-        $tracks = array();
-        foreach ($DBtracks as $track => $val) {
-            if ($track >= $count) {
-                break;
-            }
-            $tracks[$track] = $val;
-        }
-        shuffle($tracks);
-        return $tracks;
+        return DB::table('tracks')->take(10)->get()->sortByDesc('created_at');
+    }
+    public function getArtistTracks($artist)
+    {
+        return Tracks::where('artist', $artist)->simplePaginate(50);
+    }
+    public function getTrackWithSlug(string $slug)
+    {
+        return Tracks::where('slug', $slug)->first();
+    }
+
+
+    /**
+     * Albums
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getAllAlbums()
+    {
+        /*
+        $artist = EliteArtists::find(1);
+        $artist->albums()->create([
+            'title' => 'Strings and Blinks',
+            'slug' => $this->slugUnique('Strings and Blinks', '\App\Models\Albums'),
+            'artist' => $artist->name,
+            'genre' => 'Rap',
+            'url' => 'l',
+            'track_num' => rand(2, 10),
+            'art' => 's'
+        ]);
+        //*/
+        return Albums::simplePaginate(50);
+    }
+    public function getArtistAlbums($artist)
+    {
+        return Albums::where('artist', $artist)->simplePaginate(50);
+    }
+    public function getAlbumWithSlug(string $slug)
+    {
+        return Albums::where('slug', $slug)->first();
+    }
+
+
+    /**
+     * Artist
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function getAllArtists()
+    {
+        return $this->queryArtist()->paginate(50);
     }
 
     /**
-     * Get All Albums from Database
-     *
-     * @param int $count
+     * @return \App\Models\Artists|\App\Models\EliteArtists
      */
-    public function getAllAlbums($count = 20)
+    public function getArtistWithName(string $string)
     {
-        $DBAlbums = Albums::all();
-        $albums = array();
-        foreach ($DBAlbums as $album => $val) {
-            if ($album >= $count) {
-                break;
-            }
-            $albums[$album] = $val;
-        }
-        shuffle($albums);
-        return $albums;
+        $artist = Artists::where('name', $string)->first();
+        return $artist ? Artists::where('name', $string)->first() : EliteArtists::where('name', $string)->first();
     }
 
+    ////
+    //// Library
+    ////
     /**
-     * Get Most Downloaded from Most Downloaded table
-     *
-     * @param int $count
+     * @return \Illuminate\Support\Collection
      */
-    public function mostDownloaded($count = 20)
+    public function trending ($count = 25)
     {
-        $md = array();
-        $x = 0;
-        $DBmd = DB::table('download_counter')->get();
-        foreach ($DBmd as $DB) {
-            if ($x >= $count) {
-                break;
-            }
-            $x++;
-            $track = Tracks::find($DB->tracks_id);
-            $md[$x] = $track;
-        }
-        return $md;
-    }
-
-    /**
-     * Get Trending from Database
-     *
-     * @param array $count[$track, $album]
-     */
-    public function trend($count = [15, 15])
-    {
-        $a = 0;
-        $single_tracks = Tracks::where('trackable_type', 'App\User')->get();
-        $single_tracks = $single_tracks->shuffle();
-        $trend = array();
-        foreach ($single_tracks as $single) {
-            if ($single->art_url) {
-                if ($a >= $count[0]) {
-                    break;
-                }
-                $a++;
-                $trend[$a] = $single;
-            }
-        }
-
-        // Albums
-        $albums = Albums::all();
-        $albums = $albums->shuffle();
-        foreach ($albums as $album) {
-            if ($album->art_url) {
-                if ($a >= ($count[1] + $count[0])) {
-                    break;
-                }
-                $a++;
-                $trend[$a] = $album;
-            }
-        }
-        shuffle($trend);
+        $trend = PlayCount::get()->sortByDesc('count')->take($count);
         return $trend;
     }
 
-    /**
-     * Get Album from Database
-     *
-     * @param int $id
-     */
-    public function getAlbum(int $id)
+    public function getPlay (string $type,string $slug)
     {
-        return Albums::find($id);
+        if ($type === 'track') {
+            $a = Tracks::where('slug', $slug)->first();
+            $a->url = Storage::url('songs/godzilla.mp3');
+            $a->color = $this->getColor($a->art);
+            return [$a];
+        }
     }
 
-    /**
-     * Get Track From Database
-     *
-     * @param int $id
-     */
-    public function getTrack(int $id)
+    ///
+    /// Queries
+    ///
+    public function queryDB (string $string)
     {
-        return Tracks::find($id);
-    }
-
-    /**
-     * Get User
-     *
-     * @param int $id
-     */
-    public function getUserWithId(int $id)
-    {
-        return User::find($id);
-    }
-
-    /**
-     * Get User from Database
-     *
-     * @param string $type $type ['App/User']
-     * @param int $id
-     */
-    public function getUser(string $type, int $id)
-    {
-        if (PHP_OS == 'WINNT') {
-            $type = explode('\\', $type);
-        } else {
-            $type = explode('/', $type);
+        $artist = $this->queryArtist()->where('name', 'LIKE', '%'.$this->escape_like($string).'%')->get();
+        foreach ($artist as $key)
+        {
+            $key->url = route('artist', ['name' => $key->name]);
         }
 
-        if ($type[1] == 'Albums') {
-            $album = Albums::find($id);
-            return $this->getUserWithId($album->user_id);
-        } elseif ($type[1] == 'User') {
-            return $this->getUserWithId($id);
+        $media = $this->queryMedia()->where('title', 'LIKE', '%'.$this->escape_like($string).'%')->get();
+        foreach ($media as $key)
+        {
+            if ($key->type == 'track') {
+                $key->url = route('track', ['artist' => $key->artist, 'slug' => $key->slug]);
+            } else {
+                $key->url = route('album', ['artist' => $key->artist, 'slug' => $key->slug]);
+            }
         }
-
-        return false;
+        return [
+            'artist' => $artist,
+            'media' => $media
+        ];
     }
 
+    /**
+     * Query Artist
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function queryArtist()
+    {
+        $artist = DB::table('artists')->select('name', 'avatar');
+        $elite = DB::table('elite_artist')->select('name', 'avatar');
+        $query = $elite->union($artist);
+        $querySql = $query->toSql();
+        $query = DB::table(DB::raw("($querySql order by name desc) as a"))->mergeBindings($query);
+        return $query;
+    }
+
+    /**
+     * Query Tracks AND Albums
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function queryMedia()
+    {
+        $tracks = DB::table('tracks')->select('title', 'slug','artist', 'type');
+        $albums = DB::table('albums')->select('title', 'slug','artist', 'type');
+        $query = $albums->union($tracks);
+        $querySql = $query->toSql();
+        $query = DB::table(DB::raw("($querySql order by type asc) as a"))->mergeBindings($query);
+        return $query;
+    }
+
+
+    //////////////////////////
+    //////////////////////////
+    //////////////////////////
     /**
      * Get MainColor from image
+     * @param string $img_path
+     * @return array $mainColor
      */
-    public function mainColor($img, $bool = true, $palette = [16, 8])
+    public function mainColor($img_path, $bool = true, $palette = [16, 8])
     {
-        if (!$img)
+        if (!$img_path)
             return false;
 
-        $mime = explode('/', mime_content_type($img));
+        $mime = explode('/', mime_content_type($img_path));
         switch ($mime[1]) {
             case 'jpeg':
-                $image = imagecreatefromjpeg($img);
+                $image = imagecreatefromjpeg($img_path);
                 break;
 
             case 'webp':
-                $image = imagecreatefromwebp($img);
+                $image = imagecreatefromwebp($img_path);
                 break;
             case 'bmp':
-                $image = imagecreatefrombmp($img);
+                $image = imagecreatefrombmp($img_path);
                 break;
 
             case 'png':
-                $image = imagecreatefrompng($img);
+                $image = imagecreatefrompng($img_path);
                 break;
 
             default:
                 return false;
                 break;
         }
-        $imgsize = getimagesize($img);
+        $imgsize = getimagesize($img_path);
         $resizeImage = imagecreatetruecolor($palette[0], $palette[1]);
         imagecopyresized($resizeImage, $image, 0, 0, 0, 0, $palette[0], $palette[1], $imgsize[0], $imgsize[1]);
         imagedestroy($image);
@@ -222,14 +227,14 @@ trait MediaQuery
     }
 
     /**
-     * Invert Color if mainColor[0] is close
+     * Invert Color if colors[0] is close
      * to white
      *
-     * @param array &$array
+     * @param array &$colors
      *
      * @see MediaQuery::mainColor
      */
-    public function invert(array &$colors)
+    public function invert(&$colors)
     {
         list($r, $g, $b) = sscanf($colors[0], "#%02x%02x%02x");
         $value = (max($r, $g, $b) + min($r, $g, $b)) / 510.0;
@@ -240,24 +245,25 @@ trait MediaQuery
     }
 
     /**
-     * @param [string] $img
+     * @param [string] $img_path
      * @return bool|string
      */
-    static public function base64_to_image(string $base64,string $img)
+    static public function base64_to_image(string $base64, string $img_path)
     {
-        if (!$base64) {
+        if (!$base64 || !$img_path) {
             return false;
         }
-        $file = fopen($img, 'wb');
+        $file = fopen($img_path, 'wb');
 
         // split base64 to data[]
         $data = explode(',', $base64);
-        if (count($data) > 2) {
+        $offset = count($data) - 1;
+        if ($offset < 1) {
             return false;
         }
-        fwrite($file, base64_decode($data[1]));
+        fwrite($file, base64_decode($data[$offset]));
         fclose($file);
-        return $img;
+        return $img_path;
     }
 
     static public function image_to_base64(string $path)
@@ -266,7 +272,7 @@ trait MediaQuery
         return 'data:image/' . $type . ';base64,' . base64_encode(file_get_contents($path));
     }
 
-    public function removeFile($file)
+    public static function removeFile(string $file)
     {
         if (PHP_OS == 'WINNT') {
             $rm = new Process([
@@ -288,20 +294,61 @@ trait MediaQuery
     /**
      * Generate default avatar for artist
      */
-    public function artistArt($path = null)
+    public function artistArt($path = null) : string
     {
         $path = $path ? $path : storage_path('avatar.png');
         return $this->image_to_base64($path);
     }
+    public static function coverArt(string $path = null) : string
+    {
+        $def = $path ? $path : storage_path('/default.png');
+        $type = pathinfo($def, PATHINFO_EXTENSION);
+        return 'data:image/' . $type . ';base64,' . base64_encode(file_get_contents($def));
+    }
+
+    public function putFile($file, $path = 'images')
+    {
+        return Storage::putFile($path, $file);
+    }
 
     /**
-     * Get free Artist name
+     * Generate unique slug
+     *
+     * @param string $string
+     * @param \App\Models\Albums|\App\Models\Tracks $class
      */
-    public function queryArtist(string $string)
+    public static function slugUnique(string $string, $class = '\App\Models\Tracks') : string
     {
-        $pa = Artists::where('name', $string)->first();
-        $ea = EliteArtists::where('name', $string)->first();
+        $obj = $class::where('slug', $string)->first();
+        if ($obj) {
+            $slug = $string;
+            $x = 1;
+            do {
+                $string = $slug . '-' . $x++;
+            } while ($class::where('slug', $string)->first());
+        }
+        return $string;
+    }
 
-        return ($ea ? $ea : $pa);
+    public function getColor($base64, $_path = null) : array
+    {
+        $path = $_path ? $_path : storage_path('app') . DIRECTORY_SEPARATOR . 'temp' . DIRECTORY_SEPARATOR . 'artist' . Str::random() . '.jpg';
+        $this->base64_to_image($base64, $path);
+        $color = ($path) ? $this->mainColor($path, false) : ['rgb(13, 22, 29)', 'rgb(16, 3, 19)'];
+        $this->removeFile($path);
+        return $color;
+    }
+
+    /**
+     * Escape special character for LIKE query
+     */
+    public function escape_like(string $string, string $char = '\\') : string
+    {
+        return str_replace(
+            [$char, '%', '_'],
+            [$char.$char, $char.'%', $char.'_'],
+            $string
+        );
     }
 }
+

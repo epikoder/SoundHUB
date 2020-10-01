@@ -18,6 +18,8 @@ class AuthController extends Controller
     protected $user;
 
     /**
+     * Route for signup
+     *
      * @param Request $request
      */
     public function regSignupRoute(Request $request)
@@ -26,45 +28,44 @@ class AuthController extends Controller
          * Check if user is logged in
          */
         if ($request->user()) {
+            Session::put('user', json_decode($request->user()->toJson()));
             if ($request->user()->artists) {
-                Session::put('user', json_decode($request->user()->toJson()));
                 if ($request->user()->artists->name == null) {
-                    Session::put('user', json_decode($request->user()->toJson()));
                     redirect()->route('setup');
                 }
                 return redirect()->route('dashboard/artists', ['name' => $request->user()->artists->name]);
             }
+            return redirect()->route('pay/info');
         }
 
-        /**
-         * Return signup form
-         */
         return view('signup.signup-reg');
     }
 
-    
+    /**
+     * Save user information and await email verification
+     *
+     * @param Request $request
+     */
     public function regSignup(Request $request)
     {
         /**
          * Check if User is logged in
          */
         if ($request->user()) {
+            Session::put('user', json_decode($request->user()->toJson()));
             if ($request->user()->artists) {
-                Session::put('user', json_decode($request->user()->toJson()));
                 if ($request->user()->artists->name == null) {
-                    Session::put('user', json_decode($request->user()->toJson()));
                     redirect()->route('setup');
                 }
                 return redirect()->route('dashboard/artists', ['name' => $request->user()->artists->name]);
             }
+            return redirect()->route('pay/info');
         }
 
-        /**
-         * Validate email and if already exist
-         */
+        // Validation
         if (!$request->exists('email') || !$request->exists('name') || $this->validator($request)) {
             return response()->json([
-                'message' => 'ERROR: please varify the information'
+                'message' => 'ERROR: invalid information'
             ], 400);
         }
         if ($this->user($request->email)) {
@@ -85,16 +86,24 @@ class AuthController extends Controller
         return response()->json([]);
     }
 
+    /**
+     * Response on save success
+     */
     public function responseSignup()
     {
         return view('signup.signup-res');
     }
 
+    /**
+     * Return view for signup completion after email verification
+     *
+     */
     public function verSignup(Request $request)
     {
         /**
          * Verify info to prevent existing email
          */
+        Session::flush();
         $signup = Signup::find($request->id);
         if ($this->user($signup->email)) {
             return redirect()->route('login');
@@ -104,6 +113,9 @@ class AuthController extends Controller
         return view('signup.signup');
     }
 
+    /**
+     * Complete signup process  uses xhttp
+     */
     public function signup(Request $request)
     {
         /**
@@ -132,9 +144,7 @@ class AuthController extends Controller
 
         //Set roles
         $user->roles()->sync(1);
-        //Auth user
-        $this->lazyAuth($user);
-
+        
         return response()->json();
     }
 

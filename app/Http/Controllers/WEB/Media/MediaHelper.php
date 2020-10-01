@@ -1,6 +1,8 @@
 <?php
+
 namespace App\Http\Controllers\WEB\Media;
 
+use App\Http\Controllers\MediaQuery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -9,12 +11,13 @@ use illuminate\Support\Str;
 
 trait MediaHelper
 {
+    use MediaQuery;
     /**
      * Set the variables for job
      *
      * @see \App\Jobs\ProcessUpload
      */
-    public function prepare (Request $request)
+    public function prepare(Request $request)
     {
         /**
          * Validate data
@@ -25,8 +28,7 @@ trait MediaHelper
             'title' => 'required|string',
             'genre' => 'required|int',
             'c_genre' => 'nullable|string'
-        ]
-        );
+        ]);
 
         if ($validation->fails()) {
             return false;
@@ -36,23 +38,22 @@ trait MediaHelper
          * Prepare data on validation success
          */
         $data['title'] = $request->title;
-        $data['slug'] = Str::slug($request->title);
+        $data['slug'] = $this->slugUnique($request->title, '\App\Models\Tracks');
         $data['track'] = $request->file('track');
         $data['ext'] = $data['track']->getClientOriginalExtension();
-        $data['user'] = $request->user();
-        $data['artist'] = $data['user']->artists->name;
+        $data['artist'] = $request->user()->artists;
         $data['genre'] = $request->genre;
-        $data['album'] = env('APP_NAME');
+        $data['album'] = Config::get('app.name');
         $data['art'] = null;
 
         /** If art is uploaded add art to storage and check if art should be appended */
         if ($request->art) {
             $data['append_art'] = $request->append_art;
             $data['art'] = $request->file('art');
-            $art = Storage::putFileAs('songs/' . $data['artist'].'/images', $data['art'], $data['title'] . '.' .$data['art']->getClientOriginalExtension());
+            $art = Storage::putFileAs('songs/' . $data['artist']->name . '/images', $data['art'], $data['title'] . '.' . $data['art']->getClientOriginalExtension());
             $data['art'] = $art;
         }
-        $data['track'] = Storage::putFileAs('songs/'.$data['artist'], $data['track'], $data['title'].'.'.$data['ext']);
+        $data['track'] = Storage::putFileAs('songs/' . $data['artist']->name, $data['track'], $data['title'] . '.' . $data['ext']);
         return $data;
     }
 
@@ -61,7 +62,7 @@ trait MediaHelper
      *
      * @see \App\Jobs\ProcessBulkUpload
      */
-    public function prepareBulk (Request $request)
+    public function prepareBulk(Request $request)
     {
         /** Validation */
         $validation = Validator::make($request->all(), [
@@ -73,7 +74,7 @@ trait MediaHelper
             return 'Error: Album information';
         }
 
-        $data['artist'] = $request->user()->artists->name;
+        $data['artist'] = $request->user()->artists;
         //// VALIDATE AND ADDD EACH TRACK TO VARIABLE /////
         $tracks = json_decode('{}');
         for ($x = 1; $x <= $request->num; $x++) {
@@ -85,7 +86,7 @@ trait MediaHelper
                 ]);
 
                 if ($validation->fails()) {
-                    return 'Error: Failed to validate track '. $x;
+                    return 'Error: Failed to validate track ' . $x;
                 }
 
                 $title = 'title' . $x;
@@ -94,8 +95,8 @@ trait MediaHelper
 
                 $var->track = $request->$track;
                 $var->title = $request->$title;
-                $var->slug = Str::slug($request->$title);
-                $var->artist = $data['artist'];
+                $var->slug = $this->slugUnique($request->$title, '\App\Models\Albums');
+                $var->artist = $data['artist']->name;
                 $var->feat = null;
 
                 $feat = 'feat' . $x;
@@ -108,21 +109,20 @@ trait MediaHelper
         }
         --$x;
 
-        $data['user'] = $request->user();
         $data['art'] = null;
         $data['title'] = $request->title;
-        $data['slug'] = Str::slug($request->title);
+        $data['slug'] = $this->slugUnique($request->title, '\App\Models\Albums');
         $data['genre'] = $this->genre($request->genre, $request->c_genre);
 
 
         if ($request->art) {
             $data['append_art'] = $request->append_art;
             $art = $request->file('art');
-            $data['art'] = Storage::putFileAs('songs/' . $data['artist'] . DIRECTORY_SEPARATOR . $data['title'], $art, 'front_cover' . '.' . $art->getClientOriginalExtension());
+            $data['art'] = Storage::putFileAs('songs/' . $data['artist']->name . DIRECTORY_SEPARATOR . $data['title'], $art, 'front_cover' . '.' . $art->getClientOriginalExtension());
         }
 
         for ($a = 1; $a <= $x; $a++) {
-            $tracks->$a->track = Storage::putFileAs('songs/' . $data['artist'] . DIRECTORY_SEPARATOR . $data['title'], $tracks->$a->track, $tracks->$a->title . '.' . $tracks->$a->track->getClientOriginalExtension());
+            $tracks->$a->track = Storage::putFileAs('songs/' . $data['artist']->name . DIRECTORY_SEPARATOR . $data['title'], $tracks->$a->track, $tracks->$a->title . '.' . $tracks->$a->track->getClientOriginalExtension());
         }
 
         $data['tracks'] = $tracks;
@@ -139,6 +139,6 @@ trait MediaHelper
         if ($c_genre) {
             return trim($c_genre);
         }
-        return env('APP_NAME');
+        return Config::get('app.name');
     }
 }

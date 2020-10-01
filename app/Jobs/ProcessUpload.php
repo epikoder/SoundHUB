@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Str;
@@ -37,7 +38,7 @@ class ProcessUpload implements ShouldQueue
     public function handle()
     {
         $rand = Str::random();
-        $file = 'temp/'.$rand.'.mp3';
+        $file = 'temp/' . $rand . '.mp3';
         $def = storage_path('/default.png');
         Storage::disk('local')->put($file, Storage::get($this->data['track']));
         if (PHP_OS == 'WINNT') {
@@ -45,10 +46,10 @@ class ProcessUpload implements ShouldQueue
                 [
                     'eyeD3',
                     '-t', $this->data['title'],
-                    '-a', $this->data['artist'],
+                    '-a', $this->data['artist']->name,
                     '-G', $this->data['genre'],
                     '-A', $this->data['album'],
-                    '-c', 'Downloaded at' . env('APP_NAME') . 'com',
+                    '-c', 'Downloaded at' . Config::get('app.name') . 'com',
                     storage_path('app') . DIRECTORY_SEPARATOR . $file
                 ],
                 getcwd() . '\app\Console\bin',
@@ -59,10 +60,10 @@ class ProcessUpload implements ShouldQueue
                 [
                     'eyeD3',
                     '-t', $this->data['title'],
-                    '-a', $this->data['artist'],
+                    '-a', $this->data['artist']->name,
                     '-G', $this->data['genre'],
                     '-A', $this->data['album'],
-                    '-c', 'Downloaded at' . env('APP_NAME') . 'com',
+                    '-c', 'Downloaded at' . Config::get('app.name') . 'com',
                     storage_path('app') . DIRECTORY_SEPARATOR . $file
                 ],
                 getcwd() . DIRECTORY_SEPARATOR . '/app/Console/usr/bin',
@@ -74,7 +75,7 @@ class ProcessUpload implements ShouldQueue
         $this->art = 'data:image/webp' . ';base64,' . base64_encode(file_get_contents($def));
 
         if (isset($this->data['art'])) {
-            $image = 'temp/'.$rand.'.jpg';
+            $image = 'temp/' . $rand . '.jpg';
             Storage::disk('local')->put($image, Storage::get($this->data['art']));
             $type = pathinfo(storage_path('app') . DIRECTORY_SEPARATOR . $image, PATHINFO_EXTENSION);
             $this->art = 'data:image/' . $type . ';base64,' . base64_encode(file_get_contents(storage_path('app') . DIRECTORY_SEPARATOR . $image));
@@ -119,15 +120,15 @@ class ProcessUpload implements ShouldQueue
         $eyeD3_duration->run();
         $duration = null;
         if ($eyeD3_duration->isSuccessful()) {
-            $duration = substr(MP3File::formatTime(trim($eyeD3_duration->getOutput())).' min', 3);
+            $duration = substr(MP3File::formatTime(trim($eyeD3_duration->getOutput())) . ' min', 3);
         }
 
         Storage::put($this->data['track'], Storage::disk('local')->get($file));
         Storage::disk('local')->delete($file);
-        $track = $this->data['user']->tracks()->create([
+        $track = $this->data['artist']->tracks()->create([
             'title' => $this->data['title'],
             'slug' => $this->data['slug'],
-            'artist' => $this->data['artist'],
+            'artist' => $this->data['artist']->name,
             'album' => $this->data['album'],
             'genre' => $this->data['genre'],
             'duration' => $duration,
@@ -137,7 +138,7 @@ class ProcessUpload implements ShouldQueue
         ]);
         $track->save();
     }
-    
+
     /**
      * On job failed
      */

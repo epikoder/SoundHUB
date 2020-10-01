@@ -36,9 +36,4 @@ class MediaManager extends Controller
         ProcessBulkUpload::dispatch($data);
         return response()->json(['message' => 'Upload Successfully']);
     }
-
-    public function downloadAlbum(Request $request, $type, $artist, $id, $album)
-    {
-
-    }
 }
