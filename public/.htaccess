@@ -19,3 +19,32 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+<IfModule mod_deflate.c>
+	# Compress HTML, CSS, Javascript, Text, XML and fonts
+	AddOutPutFilterByType DEFLATE application/javascript
+	AddOutPutFilterByType DEFLATE application/rss+xml
+	AddOutPutFilterByType DEFLATE application/vnd.ms-fontobject
+	AddOutPutFilterByType DEFLATE application/x-font
+	AddOutPutFilterByType DEFLATE application/x-font-opentype
+	AddOutPutFilterByType DEFLATE application/x-font-otf
+	AddOutPutFilterByType DEFLATE application/x-font-truetype
+	AddOutPutFilterByType DEFLATE application/x-font-ttf
+	AddOutPutFilterByType DEFLATE application/x-javascript
+	AddOutPutFilterByType DEFLATE application/xhtml+xml
+	AddOutPutFilterByType DEFLATE application/xml
+	AddOutPutFilterByType DEFLATE font/opentype
+	AddOutPutFilterByType DEFLATE font/otf
+	AddOutPutFilterByType DEFLATE font/ttf
+	AddOutPutFilterByType DEFLATE image/svg+xml
+	AddOutPutFilterByType DEFLATE text/css
+	AddOutPutFilterByType DEFLATE text/html
+	AddOutPutFilterByType DEFLATE text/javascript
+	AddOutPutFilterByType DEFLATE text/plain
+	AddOutPutFilterByType DEFLATE text/xml
+	AddOutPutFilterByType DEFLATE module
+
+	BrowserMatch ^Mozilla/4 gzip-only-text/html
+	BrowserMatch ^Mozilla/4\.0[678] no-gzip
+	BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+	Header append Vary User-Agent
+</IfModule>
