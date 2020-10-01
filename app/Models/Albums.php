@@ -11,19 +11,22 @@ class Albums extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'title', 'artist', 'art', 'art_url', 'genre', 'track_num'
+        'title', 'artist', 'admin',
+        'slug', 'art', 'art_url', 'genre', 'track_num','type'
     ];
     protected $hidden = [
-        'created_at', 'updated_at'
+        'admin', 'owner_id', 'owner_type', 'id', 'created_at', 'deleted_at',
     ];
+
+    protected $table = 'albums';
 
     public function tracks()
     {
-        return $this->morphMany(Tracks::class, 'trackable');
+        return $this->morphMany(Tracks::class, 'owner');
     }
 
-    public function users()
+    public function owner()
     {
-        return $this->belongsTo(User::class);
+        return $this->morphTo();
     }
 }

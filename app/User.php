@@ -19,46 +19,42 @@ class User extends Authenticatable
         'password', 'email_verified_at', 'created_at', 'updated_at'
     ];
 
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
     protected $table = 'users';
 
     public function roles()
     {
-        return $this->belongsToMany(Models\Roles::class);
+        return $this->belongsToMany(\App\Models\Roles::class);
     }
 
     public function plans()
     {
-        return $this->belongsToMany(Models\Plans::class, 'payments')
+        return $this->belongsToMany(\App\Models\Plans::class, 'payments')
             ->withPivot('reference','response', 'expires_at')
             ->withTimestamps();
     }
 
     public function artists()
     {
-        return $this->hasOne(Models\Artists::class);
+        return $this->hasOne(\App\Models\Artists::class);
     }
 
-    public function eliteArtist()
+    public function eliteArtists()
     {
-        return $this->hasOne(Models\EliteArtists::class);
-    }
-
-    public function tracks()
-    {
-        return $this->morphMany(Models\Tracks::class, 'trackable');
-    }
-
-    public function albums()
-    {
-        return $this->hasMany(Models\Albums::class);
+        return $this->hasOne(\App\Models\EliteArtists::class);
     }
 
     public function admins()
     {
-        return $this->hasOne(Models\Admin::class);
+        return $this->hasOne(\App\Models\Admin::class);
+    }
+
+    /// Library
+    public function playlists ()
+    {
+        return $this->hasMany(\App\Models\Tracks::class);
+    }
+    public function favourites ()
+    {
+        return $this->hasMany(\App\Models\Favourites::class);
     }
 }

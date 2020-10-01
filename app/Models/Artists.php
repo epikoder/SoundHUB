@@ -12,11 +12,16 @@ class Artists extends Model
 
     public function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(\App\User::class);
     }
 
     public function tracks()
     {
-        return $this->morphMany(Tracks::class, 'trackable');
+        return $this->morphMany(Tracks::class, 'owner');
+    }
+
+    public function albums()
+    {
+        return $this->morphMany(Albums::class, 'owner');
     }
 }

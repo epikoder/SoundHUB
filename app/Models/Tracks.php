@@ -10,16 +10,21 @@ class Tracks extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'title', 'genre', 'artist', 'album_id', 'admin',
-        'url', 'duration', 'art', 'art_url', 'trackable_id', 'trackable_type'
+        'title', 'genre', 'artist', 'admin', 'slug',
+        'url', 'duration', 'art', 'art_url', 'type'
     ];
 
     protected $hidden = [
-        'admin', 'trackable_id', 'trackable_type'
+        'admin', 'owner_id', 'owner_type', 'id', 'created_at', 'deleted_at',
     ];
 
-    public function trackable()
+    public function owner()
     {
         return $this->morphTo();
+    }
+
+    public function playcount()
+    {
+        return $this->hasOne(PlayCount::class, 'slug', 'slug');
     }
 }
