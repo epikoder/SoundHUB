@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\MediaQuery;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 class EliteArtist extends Migration
 {
+    use MediaQuery;
+
     /**
      * Run the migrations.
      *
@@ -15,13 +18,19 @@ class EliteArtist extends Migration
     {
         Schema::create('elite_artist', function(Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->string('name')->unique();
-            $table->mediumText('avatar');
+            $table->mediumText('avatar')->default($this->artistArt());
             $table->json('social')->default(json_encode([
                 'instagram' => null,
                 'twitter' => null
             ]));
+            $table->tinyInteger('active')->default(1);
             $table->timestamps();
+            $table->foreign('user_id')
+            ->references('id')
+            ->on('users')
+            ->onDelete('cascade');
         });
 
 

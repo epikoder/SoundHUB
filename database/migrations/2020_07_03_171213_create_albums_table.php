@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MediaQuery;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,20 +16,20 @@ class CreateAlbumsTable extends Migration
     {
         Schema::create('albums', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
             $table->string('title');
-            $table->char('artist', 50);
-            $table->mediumText('art');
+            $table->string('slug')->unique();
+            $table->string('artist');
+            $table->char('admin', 50)->nullable();
+            $table->mediumText('art')->default(MediaQuery::coverArt());
             $table->string('art_url')->nullable();
-            $table->string('genre');
+            $table->char('genre', 50);
             $table->char('duration')->nullable();
             $table->unsignedInteger('track_num');
+            $table->string('type')->default('album');
+            $table->unsignedBigInteger('owner_id');
+            $table->string('owner_type');
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
-            $table->foreign('user_id')
-            ->references('id')
-            ->on('users')
-            ->onDelete('cascade');
         });
     }
 

@@ -21,7 +21,7 @@ class CreateArtistsTable extends Migration
         Schema::create('artists', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->string('name')->nullable();
+            $table->string('name')->nullable()->unique();
             $table->mediumText('avatar')->default($this->artistArt());
             $table->json('social')->default(json_encode([
                 'instagram' => null,
