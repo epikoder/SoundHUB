@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 9);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -48386,12 +48386,15 @@ _char = new chart_js__WEBPACK_IMPORTED_MODULE_0___default.a(_char, {
       borderWidth: 1
     }]
   }
-});
-console.log(artists);
+}); //////////////
+
+var dashboard = document.getElementById('dashboard');
+dashboard.style.backgroundColor = 'blue';
+dashboard.style.color = 'white';
 
 /***/ }),
 
-/***/ 9:
+/***/ 8:
 /*!********************************************!*\
   !*** multi ./resources/js/admin/dashboard ***!
   \********************************************/

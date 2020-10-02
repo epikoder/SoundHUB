@@ -144,7 +144,7 @@ class AuthController extends Controller
 
         //Set roles
         $user->roles()->sync(1);
-        
+
         return response()->json();
     }
 
@@ -173,7 +173,7 @@ class AuthController extends Controller
                 'artist' => $artist,
                 'url' => [
                     'dashboard' => $dashboard,
-                    'pay' => route('paystack/pay')
+                    'pay' => route('pay/info')
                 ]
             ]
         );

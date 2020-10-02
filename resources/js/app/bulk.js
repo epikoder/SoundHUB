@@ -1,6 +1,6 @@
 import $ from "jquery";
 import ajaxForm from "jquery-form";
-import selectize from "selectize";
+import select2 from "select2";
 import { toast } from '../app';
 
 /** Custom select */
@@ -121,4 +121,8 @@ $("form").ajaxForm({
     },
     success: callback,
     error: errorcall
+});
+
+$(function() {
+    $(".select2").select2();
 });

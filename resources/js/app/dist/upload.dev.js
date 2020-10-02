@@ -1,74 +1,71 @@
 "use strict";
 
-require("jquery");
+var _jquery = _interopRequireDefault(require("jquery"));
 
-let s = [];
+var _jqueryForm = _interopRequireDefault(require("jquery-form"));
 
-function add() {
-    let v = $("#select").val();
-    let sv = s.values();
-    let _iteratorNormalCompletion = true;
-    let _didIteratorError = false;
-    let _iteratorError = undefined;
+var _select = _interopRequireDefault(require("select2"));
 
-    try {
-        for (
-            let _iterator = sv[Symbol.iterator](), _step;
-            !(_iteratorNormalCompletion = (_step = _iterator.next()).done);
-            _iteratorNormalCompletion = true
-        ) {
-            let x = _step.value;
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-            if (x == v) {
-                return false;
-            }
-        }
-    } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-    } finally {
-        try {
-            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-                _iterator["return"]();
-            }
-        } finally {
-            if (_didIteratorError) {
-                throw _iteratorError;
-            }
-        }
-    }
+var x;
+var labelVal;
+(0, _jquery["default"])(".inputfile").on("change", function (e) {
+  var label = this.nextElementSibling;
 
-    s.push(v);
+  if (!x) {
+    x = 1;
+    labelVal = label.innerHTML;
+  }
 
-    if (v == "year") {
-        $("#addon").append(
-            '<input name="year" type="number" value="<?php echo(date("Y")); ?>" class="text-center outline-none border-b-2 input-u focus:border-green-300">'
-        );
-    }
+  var name = null;
+  name = e.target.value.split("\\").pop();
 
-    if (v == "art") {
-        $("#addon").append(
-            '<input name="art" type="file" class="text-center outline-none w-full">\n                <div class="w-full text-left"><input type="checkbox" name="write" class="text-center"><span class="text-sm">change default art?</span></div>'
-        );
-    }
+  if (name) {
+    return label.innerHTML = name;
+  } else {
+    label.innerHTML = labelVal;
+  }
+});
+(0, _jquery["default"])("form").ajaxForm({
+  beforeSubmit: validate,
+  success: callback,
+  error: error
+});
 
+function validate() {
+  var track = (0, _jquery["default"])(".track").val();
+  var title = (0, _jquery["default"])(".title").val();
+
+  if (track && title) {
+    (0, _jquery["default"])(".submit").prop("disabled", true);
     return true;
+  }
+
+  (0, _jquery["default"])(".submit").prop("disabled", false);
+  return false;
 }
 
-function close() {
-    location.assign(
-        "{{ route('dashboard/artists',['name' => $artist->name]) }}"
-    );
+function callback(response) {
+  if (response.responseJSON) {
+    alert(response.responseJSON.message);
+  } else {
+    alert(response.message);
+  }
+
+  (0, _jquery["default"])(".submit").prop("disabled", false);
 }
 
-$(document).on("submit", "form", function() {
-    NP.start();
-});
-$("#add").on("click", function(e) {
-    e.preventDefault();
-    add();
-});
-$("#close").on("click", function(e) {
-    e.preventDefault();
-    close();
+function error(error) {
+  if (error.status == 401) {
+    location.assign(login);
+  } else {
+    alert(error.responseJSON.message);
+  }
+
+  (0, _jquery["default"])(".submit").prop("disabled", false);
+}
+
+(0, _jquery["default"])(function () {
+  (0, _jquery["default"])('.select2').select2();
 });

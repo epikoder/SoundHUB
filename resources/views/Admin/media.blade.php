@@ -21,54 +21,12 @@
         <div id="content" class="flex p-6">
         </div>
     </div>
-    <script type="module">
-        var tab = '#home';
-        $('#home').on('click', function() {
-            NP.start();
-            rc(tab, '#home');
-            $('#content').load('/media.home', function() {
-                NP.done();
-            });
-        });
-        $('#upload').on('click', function() {
-            NP.start();
-            rc(tab, '#upload');
-            $('#content').load('/media.upload', function() {
-                NP.done();
-                $('.select2').select2();
-            });
-
-        });
-        $('#al-upload').on('click', function() {
-            NP.start();
-            rc(tab, '#al-upload');
-            $('#content').load('/media.al-upload', function() {
-                NP.done();
-                $('.select2').select2();
-            });
-        });
-        $('#manage').on('click', function() {
-            NP.start();
-            rc(tab, '#manage');
-            $('#content').load('/media.manage', function() {
-                NP.done();
-            });
-
-        });
-
-        function rc(x, y) {
-            $(x).removeClass('text-blue-500');
-            $(y).addClass('text-blue-500');
-            tab = y;
-        }
-
-        $(function() {
-            $('#media').addClass('bg-gray-900 text-white');
-            $('#home').addClass('text-blue-500');
-            $('#content').load('/media.home', function() {
-                NP.done();
-            });
-        });
-
-    </script>
 @endsection
+@push('head')
+@javascript('homeUrl', route('media.links', ['path' => 'home']))
+@javascript('uploadUrl', route('media.links', ['path' => 'upload']))
+@javascript('albumUrl', route('media.links', ['path' => 'al-upload']))
+@javascript('manageUrl', route('media.links', ['path' => 'manage']))
+<script type="module" src={{asset('js/admin/media.js')}}></script>
+<link rel="stylesheet" href={{asset('css/select2.min.css')}}>
+@endpush

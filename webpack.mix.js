@@ -20,7 +20,10 @@ mix.js("resources/js/app.js", "public/js")
     .js("resources/js/app/setup.js", "public/js/app")
     .js("resources/js/app/bulk.js", "public/js/app")
     .sass("resources/sass/app.scss", "public/css")
+    .sass("resources/sass/select2.min.scss", "public/css")
     .sass("resources/sass/tailwind.scss", "public/css");
 
 mix.js("resources/js/admin/dashboard", "public/js/admin")
-    .sass("resources/sass/admin.scss","public/css");
+    .js("resources/js/admin/media", "public/js/admin")
+    .js("resources/js/admin/admin", "public/js/admin")
+    .sass("resources/sass/admin.scss", "public/css");

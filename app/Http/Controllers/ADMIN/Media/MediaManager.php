@@ -25,9 +25,7 @@ class MediaManager extends Controller
             ]);
         }
         ProcessUpload::dispatch($data);
-        return view('Admin.media',[
-            'message' => 'upload successful'
-        ]);
+        return response()->json(['status' => 'Upload Successfully']);
     }
 
     public function bulkUpload(Request $request)

@@ -342,7 +342,7 @@ trait MediaQuery
     /**
      * Escape special character for LIKE query
      */
-    public function escape_like(string $string, string $char = '\\') : string
+    public static function escape_like(string $string, string $char = '\\') : string
     {
         return str_replace(
             [$char, '%', '_'],

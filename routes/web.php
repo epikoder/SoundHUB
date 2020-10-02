@@ -86,12 +86,13 @@ Route::namespace('WEB')->domain(Config::get('app.url'))->group(function () {
 ######################################################
 ################## Begin of Admin ####################
 ######################################################
-Route::namespace('ADMIN')->domain('admin.' .Config::get('app.url'))->group(function () {
+Route::namespace('ADMIN')->domain('admin.' . Config::get('app.url'))->group(function () {
     Route::get('/', 'Views@indexRedirect');
     Route::group(['prefix' => 'v1'], function () {
         // Login
         Route::get('/', 'Views@index')->name('login/admin');
         Route::post('login', 'Admin@login')->name('login.admin');
+        Route::get('logout', 'Admin@logout')->name('logout.admin');
 
         Route::group(['middleware' => ['auth', 'admin']], function () {
             //Artist & User
@@ -103,7 +104,7 @@ Route::namespace('ADMIN')->domain('admin.' .Config::get('app.url'))->group(funct
             Route::post('uploadBulk', 'Media\MediaManager@bulkUpload')->name('admin.uploadBulk');
 
             Route::get('/dashboard', 'Views@dashboard')->name('Admin/dashboard');
-            Route::get('/media', 'Views@media')->name('media/admin');
+            Route::get('/media', 'Views@media')->name('Admin/media');
             Route::get('/media.{path}', 'Views@mediaLinks')->name('media.links');
         });
     });

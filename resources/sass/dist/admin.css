@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   height: 100%;
   padding: 0px;
   margin: 0px;
@@ -20,16 +21,19 @@ main nav {
   background: #242222;
 }
 
+nav div {
+  background: inherit;
+}
+
 a div {
   background: inherit;
 }
 
-main div {
+main .dashboard {
   width: 100%;
   white-space: nowrap;
   overflow-x: hidden;
   overflow-y: auto;
-  background: white;
 }
 
 main div::-webkit-scrollbar {
@@ -93,4 +97,87 @@ canvas {
   -webkit-transform: rotate(3deg) translate(0px, -4px);
   -ms-transform: rotate(3deg) translate(0px, -4px);
   transform: rotate(3deg) translate(0px, -4px);
+}
+
+.inputfile {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.input-bg {
+  transition: background-color 0.3s linear;
+}
+
+.inputfile + label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: black;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.inputfile:focus + label,
+.inputfile + label:hover {
+  outline: 1px dotted #000;
+  outline: -webkit-focus-ring-color auto 5px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 100px;
+  width: 320px;
+  padding: 0.2em 1em;
+  z-index: 5;
+  left: 50%;
+  margin-left: -160px;
+  background-color: #000;
+  color: white;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 100px;
+    opacity: 1;
+  }
+}
+@keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 100px;
+    opacity: 1;
+  }
+}
+@-webkit-keyframes fadeout {
+  from {
+    bottom: 100px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
+}
+@keyframes fadeout {
+  from {
+    bottom: 100px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
 }

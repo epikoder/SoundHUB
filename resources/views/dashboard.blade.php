@@ -83,23 +83,6 @@
                         </div>
                     </div>
                     <div class="flex-col rounded my-2">
-                        <p id="promo"
-                            class="p-1 w-full cursor-pointer shadow border-l-4 border-r-4 hover:border-gray-700 input">
-                            Promote Song</p>
-                        <div id="promoI" class="px-5 font-sans text-sm">
-                            <a href={{ route('dashboard/promo', ['name' => $artist->name]) }} class="outline-none">
-                                <div class="w-full h-8 py-1 hover:bg-gray-500">
-                                    Promote Song / Album
-                                </div>
-                            </a>
-                            <a href={{ route('dashboard/promostats', ['name' => $artist->name]) }} class="outline-none">
-                                <div class="w-full h-8 py-1 hover:bg-gray-500">
-                                    In review
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="flex-col rounded my-2">
                         <a href=>
                             <div class="p-1 w-full cursor-pointer shadow border-l-4 border-r-4 hover:border-gray-700 input">
                                 Stats</div>

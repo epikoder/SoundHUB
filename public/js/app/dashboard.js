@@ -31713,7 +31713,7 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 
 
-window[nprogress__WEBPACK_IMPORTED_MODULE_3___default.a] = nprogress__WEBPACK_IMPORTED_MODULE_3___default.a;
+window['NP'] = nprogress__WEBPACK_IMPORTED_MODULE_3___default.a;
 nprogress__WEBPACK_IMPORTED_MODULE_3___default.a.start();
 
 function sc() {

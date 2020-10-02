@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Str;
@@ -132,6 +133,7 @@ class ProcessUpload implements ShouldQueue
 
         $this->data['artist']->tracks()->create([
             'title' => $this->data['title'] . $this->data['feat'],
+            'slug' => $this->data['slug'],
             'artist' => $this->data['artist']->name,
             'genre' => $this->data['genre'],
             'duration' => $duration,

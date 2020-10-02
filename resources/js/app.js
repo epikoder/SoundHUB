@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import $ from "jquery";
 import NP from "nprogress";
 
-window[NP] = NP;
+window['NP'] = NP;
 NP.start();
 function sc(a = {}, n = "SoundHUB", l = 14) {
     Cookies.set(n, JSON.stringify(a), { expires: l, path: "/" });

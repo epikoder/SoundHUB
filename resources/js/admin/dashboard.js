@@ -19,4 +19,7 @@ char = new Chart(char, {
     }
 });
 
-console.log(artists);
+//////////////
+let dashboard = document.getElementById('dashboard');
+dashboard.style.backgroundColor = 'blue';
+dashboard.style.color = 'white';

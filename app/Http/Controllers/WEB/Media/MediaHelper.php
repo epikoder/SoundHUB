@@ -4,6 +4,7 @@ namespace App\Http\Controllers\WEB\Media;
 
 use App\Http\Controllers\MediaQuery;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -137,7 +138,7 @@ trait MediaHelper
             return $val->name;
         }
         if ($c_genre) {
-            return trim($c_genre);
+            return MediaQuery::escape_like($c_genre);
         }
         return Config::get('app.name');
     }

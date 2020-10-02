@@ -19,7 +19,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 
 require("./bootstrap");
 
-window[_nprogress["default"]] = _nprogress["default"];
+window['NP'] = _nprogress["default"];
 
 _nprogress["default"].start();
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ADMIN\Media;
 use App\Http\Controllers\MediaQuery;
 use App\Models\EliteArtists;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -122,7 +123,7 @@ trait Media
             return $val->name;
         }
         if ($c_genre) {
-            return trim($c_genre);
+            return MediaQuery::escape_like($c_genre);
         }
         return Config::get('app.name');
     }

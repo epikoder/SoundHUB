@@ -39,5 +39,5 @@ function success(response) {
 
 function error(error) {
   NP.done();
-  (0, _app.toast)(response.responseJSON.message);
+  (0, _app.toast)(error.responseJSON.message);
 }

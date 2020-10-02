@@ -9,5 +9,6 @@
             <div>
                 <img src="" alt="pix">
             </div>
+            <a href={{route('logout.admin')}}>Logout</a>
         </div>
     </nav>

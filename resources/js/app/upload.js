@@ -1,5 +1,6 @@
 import $ from "jquery";
 import ajaxForm from "jquery-form";
+import select2 from 'select2';
 
 let x;
 let labelVal;
@@ -52,3 +53,7 @@ function error(error) {
     }
     $(".submit").prop("disabled", false);
 }
+
+$(function () {
+    $('.select2').select2();
+})

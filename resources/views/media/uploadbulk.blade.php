@@ -106,5 +106,6 @@
     @push('head')
         @javascript('artist', $artist->name)
         <script src={{ asset('js/app/bulk.js') }} type="module"></script>
+        <link rel="stylesheet" href={{asset('css/select2.min.css')}}>
     @endpush
 @endsection

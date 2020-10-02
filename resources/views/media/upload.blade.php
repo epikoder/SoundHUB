@@ -8,6 +8,8 @@
             class="sm:w-5/6 md:w-5/6 lg:w-2/6 xl:w-2/6 m-auto mt-20 px-12 py-8 border border-gray-500 bg-gray-300 rounded-md frame">
             <form class="form" action="{{ route('media.upload') }}" method="post" enctype="multipart/form-data">
                 @csrf
+
+                NEEDS WORKING
                 <div class="flex-col px-2">
                     <div class="w-full flex input-group border input-bg hover:border-teal-500 rounded-md">
                         <label for="title" class="bg-black text-white px-2">
@@ -27,7 +29,7 @@
                     </div>
                     <div class="flex-col my-4">
                         <div class="flex my-1">
-                            <select name="genre" class="m-auto select">
+                            <select name="genre" class="m-auto select2">
                                 <option value="">select genre</option>
                                 @foreach ($genres as $genre)
                                     <option value={{ $genre->id }}>{{ $genre->name }}</option>
@@ -75,5 +77,6 @@
     @push('head')
         @javascript('login', route('login'))
         <script type="module" src=" {{ asset('/js/app/upload.js') }} "></script>
+        <link rel="stylesheet" href={{ asset('css/select2.min.css') }}>
     @endpush
 @endsection
