@@ -28,12 +28,6 @@
             </div>
 
             <div class="h-20 flex justify-between">
-                <div class="inline-block">
-                    ADS ADS ADS ADS ADS ADS ADS
-                </div>
-                <div class="inline-block">
-                    ADS ADS ADS ADS ADS ADS ADS
-                </div>
             </div>
 
             <div id="wide" class="flex w-full justify-between">

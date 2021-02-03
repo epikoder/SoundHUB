@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 //////////////// W E B /////////////////////////////////////////
-Route::namespace('WEB')->domain(Config::get('app.url'))->group(function () {
+Route::namespace('WEB')->group(function () {
     Route::get('/', 'Routes\MediaController@indexRedirect')->name('home');
     Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
         /// Signup
@@ -86,7 +86,7 @@ Route::namespace('WEB')->domain(Config::get('app.url'))->group(function () {
 ######################################################
 ################## Begin of Admin ####################
 ######################################################
-Route::namespace('ADMIN')->domain('admin.' . Config::get('app.url'))->group(function () {
+Route::namespace('ADMIN')->prefix('admin')->group(function () {
     Route::get('/', 'Views@indexRedirect');
     Route::group(['prefix' => 'v1'], function () {
         // Login
